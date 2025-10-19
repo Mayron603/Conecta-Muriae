@@ -1,4 +1,28 @@
-<?php include_once __DIR__ . "/comuns/candidato_cabecalho.php"; ?>
+<?php 
+include_once __DIR__ . "/comuns/candidato_cabecalho.php";
+
+$mapaVinculo = [
+    '1' => 'CLT',
+    '2' => 'PJ',
+    '3' => 'Estágio',
+    '4' => 'Temporário',
+    '5' => 'Freelance'
+];
+
+$candidaturas = $aDados['candidaturas'] ?? [];
+
+function getStatusCandidatura($status) {
+    switch ($status) {
+        case 1: return ['text' => 'Pendente', 'class' => 'bg-warning'];
+        case 2: return ['text' => 'Em Análise', 'class' => 'bg-info'];
+        case 3: return ['text' => 'Entrevista Agendada', 'class' => 'bg-primary'];
+        case 4: return ['text' => 'Aprovado', 'class' => 'bg-success'];
+        case 5: return ['text' => 'Reprovado', 'class' => 'bg-danger'];
+        default: return ['text' => 'Desconhecido', 'class' => 'bg-secondary'];
+    }
+}
+
+?>
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -7,37 +31,21 @@
         <div class="col-lg-9">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h4 mb-0">Minhas Candidaturas</h2>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-filter me-1"></i> Filtrar
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#">Todas</a></li>
-                                <li><a class="dropdown-item" href="#">Em análise</a></li>
-                                <li><a class="dropdown-item" href="#">Visualizadas</a></li>
-                                <li><a class="dropdown-item" href="#">Aprovadas</a></li>
-                                <li><a class="dropdown-item" href="#">Reprovadas</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <p class="text-muted mb-4">Acompanhe o status de todas as suas candidaturas.</p>
+                    <h2 class="h4 mb-4">Minhas Candidaturas</h2>
                     
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover align-middle">
                             <thead class="table-light">
                                 <tr>
                                     <th>Vaga</th>
                                     <th>Empresa</th>
-                                    <th>Data</th>
+                                    <th>Data da Candidatura</th>
                                     <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- CORREÇÃO: Trocado $aDados por $dados -->
-                                <?php if (empty($dados['candidaturas'])): ?>
+                                <?php if (empty($candidaturas)): ?>
                                     <tr>
                                         <td colspan="5" class="text-center py-5">
                                             <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
@@ -46,29 +54,20 @@
                                         </td>
                                     </tr>
                                 <?php else: ?>
-                                    <!-- CORREÇÃO: Trocado $aDados por $dados -->
-                                    <?php foreach ($dados['candidaturas'] as $item): ?>
+                                    <?php foreach ($candidaturas as $item): ?>
                                         <tr>
                                             <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="flex-shrink-0">
-                                                        <div class="rounded-circle bg-primary bg-opacity-10" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                                            <i class="fas fa-briefcase text-primary"></i>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex-grow-1 ms-3">
-                                                        <h6 class="mb-0"><?= htmlspecialchars($item['vaga']['descricao']) ?></h6>
-                                                        <small class="text-muted"><?= htmlspecialchars($item['vaga']['vinculo']) ?></small>
-                                                    </div>
-                                                </div>
+                                                <h6 class="mb-0 fw-bold"><?= htmlspecialchars($item['vaga']['cargo_descricao'] ?? 'Vaga não encontrada') ?></h6>
+                                                <small class="text-muted"><?= htmlspecialchars($mapaVinculo[$item['vaga']['vinculo']] ?? 'Não especificado') ?></small>
                                             </td>
-                                            <td><?= htmlspecialchars($item['empresa']['nome']) ?></td>
-                                            <td><?= date("d/m/Y", strtotime($item['candidatura']['dtCriacao'])) ?></td>
+                                            <td><?= htmlspecialchars($item['vaga']['nome_fantasia'] ?? 'Empresa não encontrada') ?></td>
+                                            <td><?= !empty($item['candidatura']['dateCandidatura']) ? date("d/m/Y", strtotime($item['candidatura']['dateCandidatura'])) : '<span class="text-muted">N/A</span>' ?></td>
                                             <td>
-                                                <span class="badge bg-secondary"><?= htmlspecialchars($item['candidatura']['status']) ?></span>
+                                                <?php $statusInfo = getStatusCandidatura($item['candidatura']['status_candidatura'] ?? 0); ?>
+                                                <span class="badge <?= $statusInfo['class'] ?>"><?= $statusInfo['text'] ?></span>
                                             </td>
                                             <td>
-                                                <a href="<?= baseUrl() ?>vagas/visualizar/<?= $item['vaga']['vaga_id'] ?>" class="btn btn-sm btn-outline-primary">Detalhes</a>
+                                                <a href="<?= baseUrl() ?>vagas/visualizar/<?= $item['vaga']['vaga_id'] ?? '#' ?>" class="btn btn-sm btn-outline-primary">Ver Vaga</a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -81,5 +80,3 @@
         </div>
     </div>
 </div>
-
-<?php include_once __DIR__ . "/comuns/candidato_rodape.php"; ?>

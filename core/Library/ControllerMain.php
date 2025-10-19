@@ -11,6 +11,7 @@ class ControllerMain
     protected $action;
     protected $request;
     public $model;
+    public $viewData = [];
 
     use RequestTrait;
 
@@ -145,6 +146,8 @@ class ControllerMain
 
         // carrega a página
         if (file_exists($pathView . $nome . ".php")) {
+            // A MÁGICA ACONTECE AQUI: Transforma as chaves do array de dados em variáveis
+            extract($dados);
             require_once $pathView . $nome . ".php";
         } else {
             require_once $pathView . "Comuns" . DIRECTORY_SEPARATOR . "erros.php";

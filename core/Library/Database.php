@@ -602,6 +602,18 @@ class Database
     }
 
     /**
+     * CORREÇÃO: Adicionando o método limit que faltava
+     *
+     * @param int $number 
+     * @return object
+     */
+    public function limit($number)
+    {
+        $this->limit = " LIMIT " . (int)$number;
+        return $this;
+    }
+
+    /**
      * prepareSelect
      *
      * @param string $tipoRetorno 
@@ -609,9 +621,9 @@ class Database
      */
     public function prepareSelect($tipoRetorno = "all")
     {
-        $cSql = "SELECT {$this->select} FROM {$this->table} {$this->join} {$this->where} {$this->groupBy} {$this->orderBy}";
+        $cSql = "SELECT {$this->select} FROM {$this->table} {$this->join} {$this->where} {$this->groupBy} {$this->orderBy} {$this->limit}";
         $query = $this->connect()->prepare($cSql, [PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL]);
-        $rscDados = $query->execute($this->params);
+        $query->execute($this->params);
 
         self::dbClear();
 
@@ -620,7 +632,7 @@ class Database
         } elseif ($tipoRetorno == "first") {
             return $this->dbBuscaArray($query);
         } elseif ($tipoRetorno == "count") {
-            return $this->dbNumeroLinhas($rscDados);
+            return $this->dbNumeroLinhas($query);
         }
     }
 

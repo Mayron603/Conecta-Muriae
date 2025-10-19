@@ -9,7 +9,17 @@ class Home extends ControllerMain
 {
     public function index()
     {
-        $this->loadView("home");
+        $vagaModel = $this->loadModel("Vaga");
+        $estabelecimentoModel = $this->loadModel("Estabelecimento");
+        $pessoaFisicaModel = $this->loadModel("PessoaFisica");
+
+        $dados = [
+            'vagasAtivas' => $vagaModel->countAtivas(),
+            'empresasCadastradas' => $estabelecimentoModel->countAll(),
+            'candidatos' => $pessoaFisicaModel->countAll(),
+        ];
+
+        $this->loadView("home", $dados);
     }
 
     public function sobre($action = null)

@@ -4,6 +4,7 @@ include_once __DIR__ . "/comuns/candidato_cabecalho.php";
 $usuario = $dados['usuario'] ?? [];
 $curriculum = $dados['curriculum'] ?? [];
 $nomeCompleto = trim(($usuario['nome'] ?? '') . ' ' . ($usuario['sobrenome'] ?? ''));
+$progresso = $dados['progresso_perfil'] ?? 0;
 
 // Montar endereço completo incluindo cidade e UF
 $endereco = trim(
@@ -28,6 +29,17 @@ $cidadeUf = trim(
                     <a href="<?= baseUrl() ?>candidatos/curriculo" class="btn btn-sm btn-primary">Editar Perfil</a>
                 </div>
                 <div class="card-body">
+                    <!-- Barra de Progresso -->
+                    <div class="mb-4">
+                        <h3 class="h6 mb-2">Progresso do Perfil</h3>
+                        <div class="progress" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: <?= $progresso ?>%;" aria-valuenow="<?= $progresso ?>" aria-valuemin="0" aria-valuemax="100">
+                                <?= $progresso ?>%
+                            </div>
+                        </div>
+                        <small class="text-muted">Complete seu perfil para ter mais chances de ser notado.</small>
+                    </div>
+
                     <form>
                         <fieldset disabled>
                             <h3 class="h5 mb-3">Informações Pessoais</h3>

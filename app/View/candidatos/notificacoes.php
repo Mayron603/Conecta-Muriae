@@ -1,85 +1,60 @@
-<?php include_once __DIR__ . "/comuns/candidato_cabecalho.php"; ?>
+<?php 
+include_once __DIR__ . "/comuns/candidato_cabecalho.php";
 
-<!-- Main Content -->
+$notificacoes = $dados['notificacoes'] ?? [];
+
+?>
+
 <div class="container-fluid py-4">
     <div class="row">
+
         <?php include_once __DIR__ . "/comuns/sidebar.php"; ?>
 
-        <!-- Content Area -->
         <div class="col-lg-9">
-            <div class="card shadow-sm mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header pb-0">
+                    <h2 class="h5">Central de Notificações</h2>
+                    <p class="text-sm text-muted">Todas as suas atualizações importantes aparecem aqui.</p>
+                </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h2 class="h4 mb-0">Notificações</h2>
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary me-2">
-                                <i class="fas fa-check-circle me-1"></i> Marcar todas como lidas
-                            </button>
-                            <button class="btn btn-sm btn-outline-danger">
-                                <i class="fas fa-trash-alt me-1"></i> Limpar todas
-                            </button>
-                        </div>
-                    </div>
                     
-                    <div class="list-group list-group-flush">
-                        <!-- Notificação não lida -->
-                        <div class="list-group-item notification-item unread p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="notification-icon interview">
-                                    <i class="fas fa-calendar-check"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-1">Convite para entrevista</h5>
-                                    <p class="mb-1">Você foi convidado para uma entrevista na Empresa Exemplo para a vaga de Desenvolvedor Web.</p>
-                                    <small class="notification-time"><i class="far fa-clock me-1"></i> Hoje, 10:30 AM</small>
-                                </div>
-                                <div class="ms-3">
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
+                    <?php if (empty($notificacoes)): ?>
+                        <div class="alert alert-info text-white" role="alert">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Você ainda não tem nenhuma notificação.
                         </div>
-                        
-                        <!-- Notificação lida -->
-                        <div class="list-group-item notification-item p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="notification-icon application">
-                                    <i class="fas fa-briefcase"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="mb-1">Candidatura atualizada</h5>
-                                    <p class="mb-1">Sua candidatura para Analista de Marketing na Tech Solutions foi visualizada.</p>
-                                    <small class="notification-time"><i class="far fa-clock me-1"></i> Ontem, 15:45 PM</small>
-                                </div>
-                                <div class="ms-3">
-                                    <button class="btn btn-sm btn-outline-secondary">
-                                        <i class="fas fa-ellipsis-v"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Adicione mais notificações aqui -->
-
-                    </div>
-                    
-                    <nav class="mt-4">
-                        <ul class="pagination justify-content-center">
-                            <li class="page-item disabled">
-                                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Anterior</a>
-                            </li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item">
-                                <a class="page-link" href="#">Próxima</a>
-                            </li>
+                    <?php else: ?>
+                        <ul class="list-group list-group-flush">
+                            <?php foreach ($notificacoes as $notificacao): ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-start py-3 ps-0">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-bell text-primary"></i>
+                                        </div>
+                                        <div class="d-flex flex-column">
+                                            <h6 class="mb-1 text-dark font-weight-bold">
+                                                <?= htmlspecialchars($notificacao['titulo']) ?>
+                                            </h6>
+                                            <span class="text-sm">
+                                                <?= htmlspecialchars($notificacao['mensagem']) ?>
+                                            </span>
+                                            <a href="<?= baseUrl() . ltrim($notificacao['link'], '/') ?>" class="text-sm font-weight-bold text-primary mt-1">Ver Detalhes</a>
+                                        </div>
+                                    </div>
+                                    <div class="text-end text-sm text-muted">
+                                        <span><?= date('d/m/Y H:i', strtotime($notificacao['dataCriacao'])) ?></span>
+                                    </div>
+                                </li>
+                            <?php endforeach; ?>
                         </ul>
-                    </nav>
+                    <?php endif; ?>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<?php include_once __DIR__ . "/comuns/candidato_rodape.php"; ?>
+<?php 
+include_once __DIR__ . "/comuns/candidato_rodape.php"; 
+?>

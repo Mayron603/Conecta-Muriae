@@ -47,4 +47,104 @@ class VagaModel extends ModelMain
             "rules" => 'required|integer'
         ]
     ];
+
+    public function listarPublicas()
+    {
+        return $this->db->table($this->table . ' v')
+            ->select(
+                'v.*, ' .
+                'c.descricao as cargo_descricao, ' .
+                'e.nome as nome_fantasia'
+            )
+            ->join('cargo c', 'v.cargo_id = c.cargo_id')
+            ->join('estabelecimento e', 'v.estabelecimento_id = e.estabelecimento_id')
+            ->where('v.statusVaga', 11)
+            ->orderBy('v.dtInicio', 'DESC')
+            ->findAll();
+    }
+
+     public function findCompletoById($vagaId)
+    {
+        if (empty($vagaId)) {
+            return null;
+        }
+
+        return $this->db->table($this->table . ' v')
+            ->select(
+                'v.*, ' . 
+                'c.descricao as cargo_descricao, ' .
+                'e.nome as nome_fantasia, ' .
+                'u.usuario_id' // A seleção já estava correta
+            )
+            ->join('cargo c', 'v.cargo_id = c.cargo_id')
+            ->join('estabelecimento e', 'v.estabelecimento_id = e.estabelecimento_id')
+            // [CORREÇÃO APLICADA AQUI] Trocado 'EM' por 'A' para corresponder ao seu banco de dados
+            ->join('usuario u', 'e.estabelecimento_id = u.estabelecimento_id AND u.tipo = \'A\'', 'LEFT')
+            ->where('v.vaga_id', $vagaId)
+            ->first();
+    }
+    public function getByEstabelecimento($idEstabelecimento)
+    {
+        if (empty($idEstabelecimento)) {
+            return [];
+        }
+
+        return $this->db->table($this->table . ' v')
+            ->select(
+                'v.*, ' .
+                'c.descricao as cargo_descricao, ' .
+                'e.nome as nome_fantasia'
+            )
+            ->join('cargo c', 'v.cargo_id = c.cargo_id')
+            ->join('estabelecimento e', 'v.estabelecimento_id = e.estabelecimento_id')
+            ->where('v.estabelecimento_id', $idEstabelecimento)
+            ->orderBy('v.dtInicio', 'DESC')
+            ->findAll();
+    }
+
+    public function getById($id)
+    {
+        return $this->db->where($this->primaryKey, $id)->first();
+    }
+
+    public function countAtivas()
+    {
+        return $this->db->table($this->table)
+            ->where('statusVaga', 11)
+            ->findCount();
+    }
+
+    public function countByEstabelecimento($idEstabelecimento, $statusVaga = null)
+    {
+        if (empty($idEstabelecimento)) {
+            return 0;
+        }
+
+        $this->db->table($this->table)->where('estabelecimento_id', $idEstabelecimento);
+
+        if ($statusVaga !== null) {
+            $this->db->where('statusVaga', $statusVaga);
+        }
+
+        return $this->db->findCount();
+    }
+    
+    public function findRecentesByEstabelecimento($idEstabelecimento, $limit = 5)
+    {
+        if (empty($idEstabelecimento)) {
+            return [];
+        }
+
+        return $this->db->table($this->table . ' v')
+            ->select(
+                'v.*, ' .
+                'c.descricao as cargo_descricao'
+            )
+            ->join('cargo c', 'v.cargo_id = c.cargo_id')
+            ->where('v.estabelecimento_id', $idEstabelecimento)
+            ->where('v.statusVaga', 11)
+            ->orderBy('v.vaga_id', 'DESC')
+            ->limit($limit)
+            ->findAll();
+    }
 }

@@ -13,7 +13,11 @@ defined('CONTROLLER_AUTH') || define('CONTROLLER_AUTH', [
     "Candidatos",
     "Vagas",
     "Sobre",
-    "Contato"
+    "Contato",
+    "Empresa",
+    "Termos",
+    "MensagemCandidato",
+    "Mensagem"
 ]);
 
 // Definir o time_zone_default

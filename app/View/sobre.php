@@ -1,6 +1,5 @@
 <?php include_once __DIR__ . "/comuns/cabecalho.php"; ?>
 
-<!-- Hero Section -->
 <section class="hero-section-sobre">
     <div class="container">
         <div class="row align-items-center">
@@ -12,7 +11,6 @@
     </div>
 </section>
 
-<!-- Our Story -->
 <section class="py-5 bg-white">
     <div class="container">
         <div class="row align-items-center">
@@ -40,7 +38,6 @@
     </div>
 </section>
 
-<!-- Mission and Values -->
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
@@ -97,7 +94,6 @@
     </div>
 </section>
 
-<!-- Team -->
 <section class="py-5 bg-white">
     <div class="container">
         <div class="text-center mb-5">
@@ -105,14 +101,10 @@
             <p class="lead mx-auto" style="max-width: 600px;">Profissionais dedicados a conectar talentos e oportunidades</p>
         </div>
         
-        <div class="row g-4">
-            <!-- Mayron - Destaque -->
+        <div class="row g-4 justify-content-center">
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center p-4">
-                        <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Mayron" class="img-fluid rounded-circle border border-4 border-primary shadow">
-                        </div>
                         <h3 class="h5 fw-bold mb-1">Mayron</h3>
                         <p class="text-primary mb-3">CEO & Fundador</p>
                         <p class="small">
@@ -122,29 +114,9 @@
                 </div>
             </div>
             
-            <!-- Fillipi - Destaque -->
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center p-4">
-                        <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
-                            <img src="https://randomuser.me/api/portraits/men/44.jpg" alt="Fillipi" class="img-fluid rounded-circle border border-4 border-primary shadow">
-                        </div>
-                        <h3 class="h5 fw-bold mb-1">Fillipi</h3>
-                        <p class="text-primary mb-3">Diretor de Operações</p>
-                        <p class="small">
-                            Especialista em gestão de processos e estratégias de conexão profissional.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Yuri -->
-            <div class="col-sm-6 col-lg-3">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-body text-center p-4">
-                        <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
-                            <img src="https://randomuser.me/api/portraits/men/22.jpg" alt="Yuri" class="img-fluid rounded-circle border border-4 border-white shadow">
-                        </div>
                         <h3 class="h5 fw-bold mb-1">Yuri</h3>
                         <p class="text-primary mb-3">Desenvolvedor Sênior</p>
                         <p class="small">
@@ -154,14 +126,10 @@
                 </div>
             </div>
             
-            <!-- Clovian -->
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center p-4">
-                        <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
-                            <img src="https://randomuser.me/api/portraits/men/28.jpg" alt="Clovian" class="img-fluid rounded-circle border border-4 border-white shadow">
-                        </div>
-                        <h3 class="h5 fw-bold mb-1">Clovian</h3>
+                        <h3 class="h5 fw-bold mb-1">Cloviano</h3>
                         <p class="text-primary mb-3">Analista de Dados</p>
                         <p class="small">
                             Especialista em análise de mercado e inteligência de negócios.
@@ -170,13 +138,9 @@
                 </div>
             </div>
             
-            <!-- Iago -->
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center p-4">
-                        <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
-                            <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="Iago" class="img-fluid rounded-circle border border-4 border-white shadow">
-                        </div>
                         <h3 class="h5 fw-bold mb-1">Iago</h3>
                         <p class="text-primary mb-3">Designer UX/UI</p>
                         <p class="small">
@@ -186,13 +150,9 @@
                 </div>
             </div>
             
-            <!-- Luann -->
             <div class="col-sm-6 col-lg-3">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-body text-center p-4">
-                        <div class="mx-auto mb-3" style="width: 120px; height: 120px;">
-                            <img src="https://randomuser.me/api/portraits/men/40.jpg" alt="Luann" class="img-fluid rounded-circle border border-4 border-white shadow">
-                        </div>
                         <h3 class="h5 fw-bold mb-1">Luann</h3>
                         <p class="text-primary mb-3">Suporte ao Cliente</p>
                         <p class="small">
@@ -201,15 +161,10 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Espaço vazio para manter o alinhamento -->
-            <div class="col-sm-6 col-lg-3"></div>
-            <div class="col-sm-6 col-lg-3"></div>
         </div>
     </div>
 </section>
 
-<!-- Call to Action -->
 <section class="cta-section">
     <div class="container">
         <h2 class="cta-title display-5 fw-bold">Faça parte da nossa comunidade</h2>

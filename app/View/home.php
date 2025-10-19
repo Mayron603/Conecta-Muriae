@@ -70,19 +70,19 @@
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="stat-card">
-                    <div class="stat-number" id="vacancies-counter">0</div>
+                    <div class="stat-number" id="vacancies-counter"><?= $dados['vagasAtivas'] ?></div>
                     <div class="stat-label">Vagas Ativas</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
-                    <div class="stat-number" id="companies-counter">0</div>
+                    <div class="stat-number" id="companies-counter"><?= $dados['empresasCadastradas'] ?></div>
                     <div class="stat-label">Empresas Cadastradas</div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card">
-                    <div class="stat-number" id="candidates-counter">0</div>
+                    <div class="stat-number" id="candidates-counter"><?= $dados['candidatos'] ?></div>
                     <div class="stat-label">Candidatos</div>
                 </div>
             </div>

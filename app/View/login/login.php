@@ -69,7 +69,7 @@ Session::destroy('flash_msg');
                                     <input class="form-check-input" type="checkbox" id="remember-me" name="remember-me">
                                     <label class="form-check-label" for="remember-me">Lembrar meus dados</label>
                                 </div>
-                                <a href="#" class="text-decoration-none">Esqueceu a senha?</a>
+                                <a href="<?= baseUrl() ?>Login/recuperarSenha" class="text-decoration-none">Esqueceu a senha?</a>
                             </div>
 
                             <div class="d-grid mb-3">
