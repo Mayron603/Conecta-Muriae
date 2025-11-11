@@ -45,6 +45,10 @@ class VagaModel extends ModelMain
         "statusVaga" => [
             "label" => 'Status da Vaga',
             "rules" => 'required|integer'
+        ],
+        "salario" => [
+            "label" => 'Salário',
+            "rules" => 'numeric'
         ]
     ];
 
@@ -74,11 +78,10 @@ class VagaModel extends ModelMain
                 'v.*, ' . 
                 'c.descricao as cargo_descricao, ' .
                 'e.nome as nome_fantasia, ' .
-                'u.usuario_id' // A seleção já estava correta
+                'u.usuario_id' 
             )
             ->join('cargo c', 'v.cargo_id = c.cargo_id')
             ->join('estabelecimento e', 'v.estabelecimento_id = e.estabelecimento_id')
-            // [CORREÇÃO APLICADA AQUI] Trocado 'EM' por 'A' para corresponder ao seu banco de dados
             ->join('usuario u', 'e.estabelecimento_id = u.estabelecimento_id AND u.tipo = \'A\'', 'LEFT')
             ->where('v.vaga_id', $vagaId)
             ->first();

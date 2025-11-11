@@ -2,35 +2,90 @@
 
 namespace App\Controller;
 
-use Core\Library\ControllerMain;
+use Core\Library\Session;
 use App\Model\ConversaModel;
 use App\Model\MensagemModel;
-use Core\Library\Session;
-// Models necessários para o sidebar da empresa
-use App\Model\EstabelecimentoModel;
 use App\Model\UsuarioModel;
 
-
-class Mensagem extends ControllerMain
+class Mensagem extends EmpresaBaseController
 {
-    private $user;
-    // [CORREÇÃO APLICADA AQUI] A visibilidade deve ser 'public' para ser compatível com a classe pai.
-    public $viewData = [];
 
     public function __construct()
     {
         parent::__construct();
-        $this->user = Session::get('usuario_logado');
+        
+    }
 
-        if (empty($this->user) || !in_array($this->user['tipo'], ['A', 'G'])) {
-            header('Location: ' . baseUrl() . 'login');
+    public function iniciarConversa($params)
+    {
+        $curriculum_id = $params[0] ?? null;
+        if (!$curriculum_id) {
+            Session::set('flash_msg', ['mensagem' => 'ID do currículo não fornecido.', 'tipo' => 'error']);
+            header('Location: ' . baseUrl() . 'empresa/candidatos');
             exit;
         }
 
-        // Carrega dados para o sidebar da empresa não quebrar
-        $estabelecimentoModel = new EstabelecimentoModel();
-        $this->viewData['empresa'] = $estabelecimentoModel->getById($this->user['estabelecimento_id']);
-        $this->viewData['usuario'] = $this->user;
+        $curriculumModel = $this->loadModel("Curriculum");
+        $curriculo = $curriculumModel->find($curriculum_id);
+
+        if (!$curriculo || empty($curriculo['pessoa_fisica_id'])) {
+            Session::set('flash_msg', ['mensagem' => 'Candidato não encontrado (Erro C).', 'tipo' => 'error']);
+            header('Location: ' . baseUrl() . 'empresa/candidatos');
+            exit;
+        }
+
+        $usuarioModel = $this->loadModel("Usuario");
+        $usuarioCandidato = $usuarioModel->db->table('usuario')
+                                ->where('pessoa_fisica_id', $curriculo['pessoa_fisica_id'])
+                                ->first();
+
+        if (!$usuarioCandidato || empty($usuarioCandidato['usuario_id'])) {
+            Session::set('flash_msg', ['mensagem' => 'Candidato não encontrado (Erro U).', 'tipo' => 'error']);
+            header('Location: ' . baseUrl() . 'empresa/candidatos');
+            exit;
+        }
+
+        $id_candidato = $usuarioCandidato['usuario_id'];
+        
+        $id_usuario_empresa_logado = $this->usuarioLogado['usuario_id'];
+        $id_estabelecimento = $this->estabelecimentoId; 
+
+        $usuarios_da_empresa = $usuarioModel->db->table('usuario')->where('estabelecimento_id', $id_estabelecimento)->findAll();
+        $ids_usuarios_empresa = array_column($usuarios_da_empresa, 'usuario_id');
+
+        $conversaModel = $this->loadModel("Conversa");
+        $conversa = null;
+
+        if (!empty($ids_usuarios_empresa)) {
+            $conversa = $conversaModel->db
+                ->table('conversa')
+                ->where('id_candidato', $id_candidato)
+                ->whereIn('id_empresa', $ids_usuarios_empresa)
+                ->orderBy('id', 'ASC')
+                ->first();
+        }
+
+        if ($conversa) {
+            header('Location: ' . baseUrl() . 'mensagem/chat/' . $conversa['id']);
+            exit;
+        } else {
+            $dadosNovaConversa = [
+                'id_candidato' => $id_candidato,
+                'id_empresa'   => $id_usuario_empresa_logado,
+                'data_criacao' => date('Y-m-d H:i:s')
+            ];
+
+            $novoId = $conversaModel->db->table('conversa')->insert($dadosNovaConversa);
+
+            if ($novoId > 0) {
+                header('Location: ' . baseUrl() . 'mensagem/chat/' . $novoId);
+                exit;
+            } else {
+                Session::set('flash_msg', ['mensagem' => 'Falha ao iniciar a conversa.', 'tipo' => 'error']);
+                header('Location: ' . baseUrl() . 'empresa/candidatos');
+                exit;
+            }
+        }
     }
 
     public function index()
@@ -41,11 +96,11 @@ class Mensagem extends ControllerMain
 
     public function chat($id_conversa = null)
     {
-        $conversaModel = new ConversaModel();
-        $mensagemModel = new MensagemModel();
-        $id_empresa = $this->user['usuario_id'];
+        $conversaModel = $this->loadModel("Conversa");
+        $mensagemModel = $this->loadModel("Mensagem");
+        
+        $id_empresa = $this->usuarioLogado['usuario_id'];
 
-        // Busca as conversas da empresa com o nome correto do candidato
         $conversas = $conversaModel->db
             ->select('c.id as id_conversa, pf.nome as nome_candidato, c.id_candidato')
             ->table('conversa c')
@@ -59,20 +114,17 @@ class Mensagem extends ControllerMain
         $nome_destinatario = 'Selecione uma conversa';
 
         if ($id_conversa_ativa) {
-            // Valida se a empresa tem permissão para ver esta conversa
             $conversaValida = $conversaModel->db->table('conversa')
                 ->where('id', $id_conversa_ativa)
                 ->where('id_empresa', $id_empresa)
                 ->first();
             
             if ($conversaValida) {
-                // Busca as mensagens da conversa ativa
                 $mensagens = $mensagemModel->db->table('mensagem')
                     ->where('id_conversa', $id_conversa_ativa)
                     ->orderBy('data_envio', 'ASC')
                     ->findAll();
                 
-                // Pega o nome do candidato para o cabeçalho do chat
                 foreach($conversas as $c) {
                     if ($c['id_conversa'] == $id_conversa_ativa) {
                         $nome_destinatario = $c['nome_candidato'];
@@ -84,7 +136,6 @@ class Mensagem extends ControllerMain
             }
         }
 
-        // Junta os dados do sidebar com os dados do chat
         $dadosParaView = array_merge($this->viewData, [
             'conversas' => $conversas,
             'mensagens' => $mensagens,
@@ -92,17 +143,16 @@ class Mensagem extends ControllerMain
             'nome_destinatario' => $nome_destinatario
         ]);
 
-        // Carrega a view correta da empresa
         $this->loadView('empresa/mensagens', $dadosParaView, false);
     }
 
     public function enviar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id_empresa = $this->user['usuario_id'];
+            $id_empresa = $this->usuarioLogado['usuario_id'];
             $id_conversa = $_POST['id_conversa'];
 
-            $conversaModel = new ConversaModel();
+            $conversaModel = $this->loadModel("Conversa");
             $conversaValida = $conversaModel->db->table('conversa')
                 ->where('id', $id_conversa)
                 ->where('id_empresa', $id_empresa)
@@ -113,7 +163,7 @@ class Mensagem extends ControllerMain
                 exit;
             }
 
-            $mensagemModel = new MensagemModel();
+            $mensagemModel = $this->loadModel("Mensagem");
             $dados = [
                 'id_conversa' => $id_conversa,
                 'id_remetente' => $id_empresa,

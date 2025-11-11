@@ -19,7 +19,7 @@ class CurriculumExperienciaModel extends ModelMain
     {
         return $this->db
             ->table($this->table)
-            ->where("curriculum_id", $curriculumId) // REVERTIDO PARA O CORRETO
+            ->where("curriculum_id", $curriculumId)
             ->orderBy("inicioAno", "DESC")
             ->findAll();
     }
@@ -27,15 +27,6 @@ class CurriculumExperienciaModel extends ModelMain
     public function salvar(array $data)
     {
         $id = $data[$this->primaryKey] ?? null;
-
-        // Garante que o curriculum_id seja associado ao salvar
-        if (!isset($data['curriculum_id']) && isset($_SESSION['candidato_id'])) {
-            $curriculumModel = new CurriculumModel();
-            $curriculum = $curriculumModel->getByCandidatoId($_SESSION['candidato_id']);
-            if ($curriculum) {
-                $data['curriculum_id'] = $curriculum['curriculum_id'];
-            }
-        }
 
         if ($id) {
             unset($data[$this->primaryKey]);

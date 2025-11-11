@@ -6,7 +6,7 @@ use Core\Library\ControllerMain;
 use App\Model\VagaModel;
 use App\Model\VagaCurriculumModel;
 use App\Model\CurriculumModel;
-use App\Service\NotificationService; // Importando o serviço de notificação
+use App\Service\NotificationService;
 use Core\Library\Session;
 use Core\Library\Redirect;
 
@@ -29,8 +29,6 @@ class Vagas extends ControllerMain
 
     $vagaModel = new VagaModel();
 
-    // --- CORREÇÃO APLICADA AQUI ---
-    // Modificamos a busca para garantir que o usuario_id da empresa seja incluído.
     $vaga = $vagaModel->db
         ->select('v.*, e.nome as nome_fantasia, c.descricao as cargo_descricao, u.usuario_id') // Adicionado u.usuario_id
         ->table('vaga v')
@@ -39,7 +37,6 @@ class Vagas extends ControllerMain
         ->join('usuario u', 'v.estabelecimento_id = u.estabelecimento_id') // Adicionado JOIN com a tabela usuario
         ->where('v.vaga_id', (int)$vagaId)
         ->first();
-    // --- FIM DA CORREÇÃO ---
 
     if (empty($vaga)) {
         Session::set('flash_msg', ['mensagem' => 'Vaga não encontrada.', 'tipo' => 'error']);
@@ -84,7 +81,6 @@ class Vagas extends ControllerMain
         if ($vagaCurriculumModel->insert($dadosCandidatura)) {
             Session::set('flash_msg', ['mensagem' => 'Candidatura realizada com sucesso!', 'tipo' => 'success']);
 
-            // **INÍCIO DA INTEGRAÇÃO DE NOTIFICAÇÃO**
             $vagaModel = new VagaModel();
             $vaga = $vagaModel->findCompletoById((int)$vagaId);
 
@@ -92,7 +88,6 @@ class Vagas extends ControllerMain
                 $notificationService = new NotificationService();
                 $notificationService->notificaNovaCandidatura($user['pessoa_fisica_id'], $vaga);
             }
-            // **FIM DA INTEGRAÇÃO DE NOTIFICAÇÃO**
 
         } else {
             Session::set('flash_msg', ['mensagem' => 'Você já se candidatou a esta vaga.', 'tipo' => 'error']);

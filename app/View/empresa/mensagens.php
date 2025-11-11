@@ -100,7 +100,6 @@ if ($id_conversa_ativa) {
                         <div class="conversations-list">
                             <div class="list-group list-group-flush">
                                 <?php if (!empty($conversas)): foreach ($conversas as $conversa): ?>
-                                        <!-- [CORREÇÃO] A URL agora aponta para o controller 'mensagem' -->
                                         <a href="<?= baseUrl() ?>mensagem/chat/<?= $conversa['id_conversa'] ?>" class="list-group-item list-group-item-action <?= ($conversa['id_conversa'] == $id_conversa_ativa) ? 'active' : '' ?>">
                                             <div class="d-flex w-100 justify-content-between">
                                                 <h6 class="mb-1"><?= htmlspecialchars($conversa['nome_candidato']) ?></h6>
@@ -137,7 +136,6 @@ if ($id_conversa_ativa) {
                                     <?php endforeach; ?>
                                 </div>
                                 <div class="chat-form">
-                                    <!-- [CORREÇÃO] O action do formulário agora aponta para o controller 'mensagem' -->
                                     <form action="<?= baseUrl() ?>mensagem/enviar" method="post">
                                         <div class="input-group">
                                             <input type="hidden" name="id_conversa" value="<?= $id_conversa_ativa ?>">

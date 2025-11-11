@@ -109,7 +109,6 @@ function getStatusCandidatura($status) {
                                     <th>Vaga</th>
                                     <th>Empresa</th>
                                     <th>Data da Candidatura</th>
-                                    <th>Status</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -125,7 +124,6 @@ function getStatusCandidatura($status) {
                                             <td><?= isset($item['candidatura']['dateCandidatura']) ? date("d/m/Y", strtotime($item['candidatura']['dateCandidatura'])) : 'N/A' ?></td>
                                             <td>
                                                 <?php $statusInfo = getStatusCandidatura($item['candidatura']['status_candidatura'] ?? 0); ?>
-                                                <span class="badge <?= $statusInfo['class'] ?>"><?= $statusInfo['text'] ?></span>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>

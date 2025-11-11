@@ -1,3 +1,6 @@
+<?php
+    $usuarioLogado = \Core\Library\Session::get('usuario_logado');
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -32,9 +35,33 @@
                     <li class="nav-item"><a class="nav-link" href="<?= baseUrl() ?>contato">Contato</a></li>
                 </ul>
                 <div class="ms-lg-3 mt-3 mt-lg-0">
-                    <a href="<?= baseUrl() ?>login" class="btn btn-outline-primary me-2">Entrar</a>
-                    <a href="<?= baseUrl() ?>login/cadastro" class="btn btn-primary">Cadastrar</a>
+                    <?php if (isset($usuarioLogado) && !empty($usuarioLogado)): ?>
+                        <?php
+                            $dashboardUrl = baseUrl();
+                            if ($usuarioLogado['tipo'] == 'CN') { 
+                                $dashboardUrl .= 'candidatos/index';
+                            } elseif (in_array($usuarioLogado['tipo'], ['A', 'G'])) { 
+                                $dashboardUrl .= 'empresa/index';
+                            }
 
+                            // Lógica segura para obter o primeiro nome do usuário
+                            $nomeCompleto = $usuarioLogado['nome'] ?? $usuarioLogado['nome_fantasia'] ?? $usuarioLogado['login'] ?? 'Usuário';
+                            $primeiroNome = htmlspecialchars(explode(' ', $nomeCompleto)[0]);
+                        ?>
+                        <div class="dropdown">
+                            <a href="#" class="btn btn-primary dropdown-toggle" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user me-2"></i> Olá, <?= $primeiroNome ?>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="<?= $dashboardUrl ?>">Meu Painel</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="<?= baseUrl() ?>login/sair">Sair</a></li>
+                            </ul>
+                        </div>
+                    <?php else: ?>
+                        <a href="<?= baseUrl() ?>login" class="btn btn-outline-primary me-2">Entrar</a>
+                        <a href="<?= baseUrl() ?>login/cadastro" class="btn btn-primary">Cadastrar</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

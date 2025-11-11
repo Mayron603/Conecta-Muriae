@@ -17,13 +17,10 @@ class CargoModel extends ModelMain
     ];
 
     /**
-     * Busca todos os cargos cadastrados, em ordem alfabética.
-     *
      * @return array
      */
     public function listarTodos()
     {
-        // Usa o Query Builder interno para buscar e ordenar os cargos
         return $this->db->table($this->table)->orderBy('descricao', 'ASC')->findAll();
     }
 }

@@ -36,7 +36,6 @@ $requestUri = $_SERVER['REQUEST_URI'] ?? '';
 
 ?>
 
-<!-- ADICIONADO: Dependências do Cropper.js necessárias para o modal de recorte -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
@@ -109,10 +108,10 @@ $requestUri = $_SERVER['REQUEST_URI'] ?? '';
             <a href="<?= baseUrl() ?>empresa/candidatos" class="list-group-item list-group-item-action <?= $isActive ? 'active' : '' ?>">
                 <i class="fas fa-users fa-fw me-2"></i>Candidatos
             </a>
-            <?php $isActive = str_contains($requestUri, 'empresa/mensagens'); ?>
-            <a href="<?= baseUrl() ?>mensagem/chat" class="list-group-item list-group-item-action">
+            
+            <?php $isActive = str_contains($requestUri, 'mensagem/chat'); ?>
+            <a href="<?= baseUrl() ?>mensagem/chat" class="list-group-item list-group-item-action <?= $isActive ? 'active' : '' ?>">
                 <i class="fas fa-comments fa-fw me-2"></i>Mensagens
-            </a>
             </a>
             <?php $isActive = str_contains($requestUri, 'empresa/configuracoes'); ?>
             <a href="<?= baseUrl() ?>empresa/configuracoes" class="list-group-item list-group-item-action <?= $isActive ? 'active' : '' ?>">
@@ -122,12 +121,10 @@ $requestUri = $_SERVER['REQUEST_URI'] ?? '';
     </div>
 </div>
 
-<!-- Input de arquivo oculto para a logo -->
 <form id="logo-upload-form" style="display: none;">
     <input type="file" id="logo-input-file" name="logo" accept="image/png, image/jpeg, image/gif">
 </form>
 
-<!-- ADICIONADO: Modal para recorte da imagem (vindo da página de configurações) -->
 <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -148,7 +145,6 @@ $requestUri = $_SERVER['REQUEST_URI'] ?? '';
     </div>
 </div>
 
-<!-- ATUALIZADO: Script para usar o Cropper.js em vez do upload direto -->
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('logo-input-file'); // Alvo correto

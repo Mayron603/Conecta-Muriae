@@ -11,7 +11,7 @@
                     <a href="<?= baseUrl() ?>vagas" class="btn btn-light btn-lg px-4">
                         <i class="fas fa-search me-2"></i> Buscar Vagas
                     </a>
-                    <a href="<?= baseUrl() ?>cadastro" class="btn btn-outline-light btn-lg px-4">
+                    <a href="<?= baseUrl() ?>login/cadastro" class="btn btn-outline-light btn-lg px-4">
                         <i class="fas fa-building me-2"></i> Sou Empresa
                     </a>
                 </div>
@@ -96,10 +96,10 @@
         <h2 class="cta-title display-5 fw-bold">Faça parte da nossa comunidade</h2>
         <p class="cta-text lead mx-auto">Junte-se a dezenas de empresas e centenas de candidatos que já estão conectados através da nossa plataforma.</p>
         <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a href="<?= baseUrl() ?>cadastro" class="btn btn-light btn-lg px-4">
+            <a href="<?= baseUrl() ?>login/cadastro" class="btn btn-light btn-lg px-4">
                 <i class="fas fa-user me-2"></i> Quero me Candidatar
             </a>
-            <a href="<?= baseUrl() ?>cadastro" class="btn btn-outline-light btn-lg px-4">
+            <a href="<?= baseUrl() ?>login/cadastro" class="btn btn-outline-light btn-lg px-4">
                 <i class="fas fa-building me-2"></i> Sou Empresa
             </a>
         </div>

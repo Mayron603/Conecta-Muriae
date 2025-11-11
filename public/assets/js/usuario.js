@@ -1,52 +1,117 @@
-/*
-    * Chega nivel de segurança da Senha
-    */
+/**
+ * Função para mostrar/esconder o campo "Outro Cargo"
+ */
+function toggleOutroCargo(selectElement, targetId) {
+    const targetDiv = document.getElementById(targetId);
+    if (!targetDiv) return; // Se o elemento não existir, não faz nada
 
-function checa_segur_senha( pass , campo , bBotEnviar ) {
-    
-    var senha     = document.getElementById( pass ).value;
-    var entrada   = 0;                 
-    var lRet      = false;
-    var resultado = "";
-
-    // Verifica se o tamanho da senha é menor que 7 caracteres
-
-    if ( senha.length < 7 ) {
-        entrada = entrada - 1;
-    }
-
-    // verifica se a senha possui caracteres alfanuméricos em minusculos ou numeros
-
-    if ( !senha.match(/[a-z_]/i) || !senha.match(/[0-9]/ ) ) {
-        entrada = entrada - 1;
-    }
-
-    // Não-alfanumérico
-
-    if ( !senha.match(/\W/) ) {
-        entrada = entrada - 1;
-    }
-
-    if ( entrada == 0 ) {                                 
-        resultado = 'A segurança de sua senha e: <b><font color=\'#99C55D\'>EXCELENTE</font></b>';
-        lRet = true;
-    } else if ( entrada == -1 ) {
-        resultado = 'A segurança de sua senha e: <b><font color=\'#7F7FFF\'>BOA</font></b>';
-        lRet = true;
-    } else if ( entrada == -2 ) {
-        resultado = 'A segurança de sua senha e: <b><font color=\'#FF5F55\'>RUIM</font></b>';
-    } else if( entrada == -3 ) { 
-        resultado = 'A segurança de sua senha e: <b><font color=\'#A04040\'>MUITO RUIM</font></b>';
-    }
-
-    document.getElementById( campo ).innerHTML = resultado;
-
-    if ( lRet ) {
-        document.getElementById( bBotEnviar ).disabled  = 0; // Habilita botão enviar
+    if (selectElement.value === "") {
+        targetDiv.style.display = 'block';
     } else {
-        document.getElementById( pass ).focus = true;
-        document.getElementById( bBotEnviar ).disabled  = 1; // Desabilita botão enviar
+        targetDiv.style.display = 'none';
+        const input = targetDiv.querySelector('input[name="cargoDescricao"]');
+        if (input) {
+            input.value = '';
+        }
+    }
+}
+/**
+ * Executa o código quando o DOM (página) estiver pronto
+ */
+document.addEventListener('DOMContentLoaded', function () {
+
+    // --- LÓGICA DO CROPPER DE FOTO ---
+
+    // 1. Procura o input da foto na página
+    const inputFoto = document.getElementById('inputFoto');
+
+    // 2. Se o input existir (estamos na página de currículo), executa o script
+    if (inputFoto) {
+
+        // 3. Pega a URL de upload que o PHP colocou no HTML
+        const uploadUrl = inputFoto.dataset.uploadUrl;
+        
+        // Se não encontrar a URL, avisa no console e para
+        if (!uploadUrl) {
+            console.error('Erro: data-upload-url não foi definido no input #inputFoto');
+            return;
+        }
+
+        // 4. Pega os outros elementos do modal
+        const modalCropFoto = new bootstrap.Modal(document.getElementById('modalCropFoto'));
+        const imageToCrop = document.getElementById('imageToCrop');
+        const cropAndUploadBtn = document.getElementById('cropAndUpload');
+        let cropper;
+
+        // 5. Adiciona os "escutadores" de eventos
+        inputFoto.addEventListener('change', function (e) {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    imageToCrop.src = event.target.result;
+                    modalCropFoto.show();
+                };
+                reader.readAsDataURL(files[0]);
+            }
+        });
+
+        document.getElementById('modalCropFoto').addEventListener('shown.bs.modal', function () {
+            cropper = new Cropper(imageToCrop, {
+                aspectRatio: 1 / 1,
+                viewMode: 1,
+                dragMode: 'move',
+                background: false,
+            });
+        });
+
+        document.getElementById('modalCropFoto').addEventListener('hidden.bs.modal', function () {
+            if (cropper) {
+                cropper.destroy();
+                cropper = null;
+            }
+            inputFoto.value = '';
+        });
+
+        cropAndUploadBtn.addEventListener('click', function () {
+            this.disabled = true;
+            this.innerHTML = 'Enviando...';
+
+            cropper.getCroppedCanvas({
+                width: 400,
+                height: 400,
+            }).toBlob(function (blob) {
+                const formData = new FormData();
+                formData.append('foto', blob, 'foto_perfil.jpg');
+                
+                // 6. USA A URL CORRETA (que lemos do atributo 'data-')
+                fetch(uploadUrl, {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert(data.message || 'Ocorreu um erro ao enviar a foto.');
+                        cropAndUploadBtn.disabled = false;
+                        cropAndUploadBtn.innerHTML = 'Salvar Foto';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    alert('Ocorreu um erro de comunicação com o servidor.');
+                    cropAndUploadBtn.disabled = false;
+                    cropAndUploadBtn.innerHTML = 'Salvar Foto';
+                });
+
+            }, 'image/jpeg');
+        });
     }
 
-    return lRet;
-}
+    const chatMessages = document.getElementById('chat-messages');
+    if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});

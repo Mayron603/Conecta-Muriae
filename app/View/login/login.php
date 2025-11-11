@@ -79,9 +79,9 @@ Session::destroy('flash_msg');
                             <div class="text-center small text-muted mb-3">
                                 <p>
                                     Ao clicar em "Entrar", você aceita o
-                                    <a href="<?= baseUrl() ?>terms/termos.html" class="text-decoration-none">Contrato do Usuário</a>,
-                                    a <a href="<?= baseUrl() ?>terms/privacidade.html" class="text-decoration-none">Política de Privacidade</a> e
-                                    a <a href="<?= baseUrl() ?>terms/cookies.html" class="text-decoration-none">Política de Cookies</a>.
+                                    <a href="<?= baseUrl() ?>termos" class="text-decoration-none">Contrato do Usuário</a>,
+                                    a <a href="<?= baseUrl() ?>termos/privacidade" class="text-decoration-none">Política de Privacidade</a> e
+                                    a <a href="<?= baseUrl() ?>termos/cookies" class="text-decoration-none">Política de Cookies</a>.
                                 </p>
                             </div>
 
@@ -102,22 +102,7 @@ Session::destroy('flash_msg');
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Script para alternar visibilidade da senha -->
-<script>
-document.querySelectorAll('.password-toggle').forEach(toggle => {
-    toggle.addEventListener('click', () => {
-        const input = toggle.parentElement.querySelector('input');
-        if (input.type === 'password') {
-            input.type = 'text';
-            toggle.innerHTML = '<i class="fas fa-eye-slash"></i>';
-        } else {
-            input.type = 'password';
-            toggle.innerHTML = '<i class="fas fa-eye"></i>';
-        }
-    });
-});
-</script>
+<script src="<?= baseUrl() ?>assets/js/auth.js"></script>
 
 </body>
 </html>

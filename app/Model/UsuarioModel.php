@@ -24,25 +24,25 @@ class UsuarioModel extends ModelMain
         ]
     ];
 
-    /**
-     * Busca um usuário pelo seu login (email).
-     */
+
+    // Busca um usuário pelo seu login (email).
+
     public function getUserEmail($login)
     {
         return $this->db->table($this->table)->where("login", $login)->first();
     }
     
-    /**
-     * Busca um usuário pelo seu token de redefinição de senha.
-     */
+
+    // Busca um usuário pelo seu token de redefinição de senha.
+
     public function getUserByToken($token)
     {
         return $this->db->table($this->table)->where('reset_token', $token)->first();
     }
 
-    /**
-     * Salva o token de redefinição no banco sem disparar as validações globais.
-     */
+
+    // Salva o token de redefinição no banco
+
     public function setResetToken($usuarioId, $token, $expires)
     {
         $data = [
@@ -52,9 +52,8 @@ class UsuarioModel extends ModelMain
         return $this->db->table($this->table)->where($this->primaryKey, $usuarioId)->update($data);
     }
     
-    /**
-     * Atualiza a senha do usuário e limpa o token de redefinição.
-     */
+    // Atualiza a senha do usuário e limpa o token de redefinição.
+
     public function updatePassword($usuarioId, $newPassword)
     {
         $data = [
@@ -65,9 +64,9 @@ class UsuarioModel extends ModelMain
         return $this->db->table($this->table)->where($this->primaryKey, $usuarioId)->update($data);
     }
 
-    /**
-     * Método genérico de registro de usuário.
-     */
+
+    // Método de registro de usuário.
+
     public function registrarUsuario($dados)
     {
         return $this->insert($dados);

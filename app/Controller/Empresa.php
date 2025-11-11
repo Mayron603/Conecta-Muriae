@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Core\Library\ControllerMain;
 use Core\Library\Session;
 use Core\Library\Redirect;
 use App\Model\VagaModel;
@@ -10,163 +9,17 @@ use App\Model\CargoModel;
 use App\Model\VagaCurriculumModel;
 use App\Model\CurriculumModel;
 use App\Model\EstabelecimentoModel;
+use App\Model\UsuarioModel;
 use Core\Library\Files;
 
-class Empresa extends ControllerMain
+
+class Empresa extends EmpresaBaseController
 {
-    private $dados = [];
-    private $estabelecimentoId;
+
 
     public function __construct()
     {
-        $this->auxiliarConstruct();
-        
-        $usuarioLogado = Session::get('usuario_logado');
-        if (empty($usuarioLogado) || !in_array($usuarioLogado['tipo'], ['A', 'G'])) {
-            Session::set('flash_msg', ['mensagem' => 'Acesso não autorizado.', 'tipo' => 'error']);
-            Redirect::page('login');
-            exit;
-        }
-
-        if (!isset($usuarioLogado['estabelecimento_id'])) {
-            if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-                header('Content-Type: application/json');
-                http_response_code(401); // Unauthorized
-                echo json_encode(['success' => false, 'message' => 'ERRO DE SESSÃO: O ID do estabelecimento não foi encontrado na sua sessão. Por favor, faça login novamente.']);
-                exit;
-            } else {
-                Session::set('flash_msg', ['mensagem' => 'Erro de sessão. Por favor, faça login novamente.', 'tipo' => 'error']);
-                Redirect::page('login');
-                exit;
-            }
-        }
-
-        $this->estabelecimentoId = $usuarioLogado['estabelecimento_id'];
-
-        $estabelecimentoModel = new EstabelecimentoModel();
-        $estabelecimentoDados = $estabelecimentoModel->getById($this->estabelecimentoId);
-        $this->dados['usuario'] = $estabelecimentoDados ? array_merge($usuarioLogado, $estabelecimentoDados) : $usuarioLogado;
-
-        $vagaModel = new VagaModel();
-        $vagaCurriculumModel = new VagaCurriculumModel();
-
-        $totalVagas = $vagaModel->countByEstabelecimento($this->estabelecimentoId, 11);
-        $totalCandidatos = $vagaCurriculumModel->countByEstabelecimento($this->estabelecimentoId);
-
-        $this->dados['stats'] = [
-            'vagas' => $totalVagas,
-            'candidatos' => $totalCandidatos
-        ];
-    }
-
-    public function salvarLogoRecortada()
-    {
-        header('Content-Type: application/json');
-        try {
-            // Garante que ROOTPATH exista e aponta para a raiz do projeto.
-            if (!defined('ROOTPATH')) {
-                define('ROOTPATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
-            }
-
-            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['logo'])) {
-                throw new \Exception('Requisição inválida ou nenhum arquivo enviado.');
-            }
-
-            if ($_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
-                throw new \Exception('Erro no upload do arquivo: código ' . $_FILES['logo']['error']);
-            }
-
-            $estabelecimentoModel = new EstabelecimentoModel();
-            $logoAntiga = $this->dados['usuario']['logo'] ?? '';
-            $subfolder = 'logos';
-            
-            $uploadPath = ROOTPATH . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
-
-            $files = new Files(
-                $uploadPath,
-                ['image/png', 'image/jpeg', 'image/gif'], // Mimetypes permitidos
-                2 // Tamanho máximo em MB
-            );
-
-            // CORREÇÃO: Passando o nome do logo antigo como terceiro parâmetro.
-            // A classe Files agora se encarrega de remover o arquivo antigo, seguindo o padrão do controller Candidatos.php.
-            $uploadedFiles = $files->upload([$_FILES['logo']], $subfolder, $logoAntiga);
-            
-            if (!$uploadedFiles) {
-                $errorMsg = Session::get('msgError') ?? 'Erro desconhecido durante o upload.';
-                Session::destroy('msgError');
-                throw new \Exception($errorMsg);
-            }
-
-            $novoNomeLogo = $uploadedFiles[0]; // Pega o nome do primeiro (e único) arquivo enviado.
-
-            // Atualiza o banco de dados e remove o arquivo antigo
-            if ($estabelecimentoModel->updateLogo($this->estabelecimentoId, $novoNomeLogo)) {
-                // A exclusão do arquivo antigo agora é tratada dentro do método upload.
-                
-                $usuarioLogado = Session::get('usuario_logado');
-                $usuarioLogado['logo'] = $novoNomeLogo;
-                Session::set('usuario_logado', $usuarioLogado);
-
-                echo json_encode([
-                    'success' => true,
-                    'url' => baseUrl() . 'uploads/' . $subfolder . '/' . $novoNomeLogo,
-                    'message' => 'Logo atualizada com sucesso!'
-                ]);
-            } else {
-                // O método delete precisa do nome do arquivo e da pasta.
-                $files->delete($novoNomeLogo, $subfolder); // Remove o novo arquivo se a atualização do DB falhar
-                throw new \Exception('Erro ao atualizar a logo no banco de dados.');
-            }
-
-        } catch (\Throwable $e) {
-            http_response_code(400); // Bad Request
-            echo json_encode([
-                'success' => false,
-                'message' => 'ERRO INTERNO: ' . $e->getMessage(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine()
-            ]);
-        }
-        return;
-    }
-    
-      public function index()
-    {
-        $vagaModel = new VagaModel();
-        $this->dados['vagas_ativas'] = $vagaModel->findRecentesByEstabelecimento($this->estabelecimentoId, 5);
-        $this->loadView("empresa/index", $this->dados, false);
-    }
-
-    public function candidatos($params = [])
-    {
-        $vagaId = $params[0] ?? null;
-
-        if ($vagaId) {
-            $vagaModel = new VagaModel();
-            $vaga = $vagaModel->getById($vagaId);
-
-            if (!$vaga || $vaga['estabelecimento_id'] != $this->estabelecimentoId) {
-                Session::set('flash_msg', ['mensagem' => 'Vaga não encontrada ou não pertence à sua empresa.', 'tipo' => 'error']);
-                Redirect::page('empresa/vagas');
-                return;
-            }
-
-            $vagaCurriculumModel = new VagaCurriculumModel();
-            $this->dados['vaga'] = $vaga;
-            $this->dados['candidatos'] = $vagaCurriculumModel->getCandidatosPorVaga($vagaId);
-
-            $this->loadView("empresa/candidatos_vaga", $this->dados, false);
-
-        } else {
-            $vagaCurriculumModel = new VagaCurriculumModel();
-            $this->dados['candidatos'] = $vagaCurriculumModel->getCandidatosPorEstabelecimento($this->estabelecimentoId);
-            
-            $vagaModel = new VagaModel();
-            $this->dados['vagas'] = $vagaModel->getByEstabelecimento($this->estabelecimentoId);
-            
-            $this->loadView("empresa/candidatos", $this->dados, false);
-        }
+        parent::__construct();
     }
 
     public function verCurriculo($params)
@@ -186,27 +39,131 @@ class Empresa extends ControllerMain
             return;
         }
 
-        $this->dados['curriculo'] = $curriculo;
-        $this->loadView("empresa/ver_curriculo", $this->dados, false);
+        $this->viewData['curriculo'] = $curriculo;
+        $this->loadView("empresa/ver_curriculo", $this->viewData, false);
+    }
+
+     public function salvarLogoRecortada()
+    {
+        header('Content-Type: application/json');
+        try {
+            if (!defined('ROOTPATH')) {
+                define('ROOTPATH', dirname(__FILE__, 3) . DIRECTORY_SEPARATOR);
+            }
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_FILES['logo'])) {
+                throw new \Exception('Requisição inválida ou nenhum arquivo enviado.');
+            }
+
+            if ($_FILES['logo']['error'] !== UPLOAD_ERR_OK) {
+                throw new \Exception('Erro no upload do arquivo: código ' . $_FILES['logo']['error']);
+            }
+
+            $estabelecimentoModel = new EstabelecimentoModel();
+            
+            $logoAntiga = $this->viewData['usuario']['logo'] ?? '';
+            $subfolder = 'logos';
+            
+            $uploadPath = ROOTPATH . 'public' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR;
+
+            $files = new Files(
+                $uploadPath,
+                ['image/png', 'image/jpeg', 'image/gif'],
+                2
+            );
+
+            $uploadedFiles = $files->upload([$_FILES['logo']], $subfolder, $logoAntiga);
+            
+            if (!$uploadedFiles) {
+                $errorMsg = Session::get('msgError') ?? 'Erro desconhecido durante o upload.';
+                Session::destroy('msgError');
+                throw new \Exception($errorMsg);
+            }
+
+            $novoNomeLogo = $uploadedFiles[0];
+
+            if ($estabelecimentoModel->updateLogo($this->estabelecimentoId, $novoNomeLogo)) {
+                $usuarioLogado = Session::get('usuario_logado');
+                $usuarioLogado['logo'] = $novoNomeLogo;
+                Session::set('usuario_logado', $usuarioLogado);
+
+                echo json_encode([
+                    'success' => true,
+                    'url' => baseUrl() . 'uploads/' . $subfolder . '/' . $novoNomeLogo,
+                    'message' => 'Logo atualizada com sucesso!'
+                ]);
+            } else {
+                $files->delete($novoNomeLogo, $subfolder);
+                throw new \Exception('Erro ao atualizar a logo no banco de dados.');
+            }
+
+        } catch (\Throwable $e) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'ERRO INTERNO: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
+        }
+        return;
+    }
+    
+     public function index()
+    {
+        $vagaModel = $this->loadModel("Vaga");
+        $this->viewData['vagas_ativas'] = $vagaModel->findRecentesByEstabelecimento($this->estabelecimentoId, 5);
+        $this->loadView("empresa/index", $this->viewData, false);
+    }
+
+    public function candidatos($params = [])
+    {
+        $vagaId = $params[0] ?? null;
+        $vagaModel = $this->loadModel("Vaga"); 
+        $vagaCurriculumModel = $this->loadModel("VagaCurriculum");
+
+        if ($vagaId) {
+            $vaga = $vagaModel->getById($vagaId);
+            if (!$vaga || $vaga['estabelecimento_id'] != $this->estabelecimentoId) {
+                Session::set('flash_msg', ['mensagem' => 'Vaga não encontrada ou não pertence à sua empresa.', 'tipo' => 'error']);
+                Redirect::page('empresa/vagas');
+                return;
+            }
+
+            $this->viewData['vaga'] = $vaga;
+            $this->viewData['candidatos'] = $vagaCurriculumModel->getCandidatosPorVaga($vagaId);
+
+            $this->loadView("empresa/candidatos_vaga", $this->viewData, false);
+
+        } else {
+            $this->viewData['candidatos'] = $vagaCurriculumModel->getCandidatosPorEstabelecimento($this->estabelecimentoId);
+            $this->viewData['vagas'] = $vagaModel->getByEstabelecimento($this->estabelecimentoId);
+            
+            $this->loadView("empresa/candidatos", $this->viewData, false);
+        }
     }
     
     public function vagas()
     {
-        $vagaModel = new VagaModel();
-        $cargoModel = new CargoModel();
-        $vagaCurriculumModel = new VagaCurriculumModel();
-
+        $vagaModel = $this->loadModel("Vaga");
+        $cargoModel = $this->loadModel("Cargo");
+        $vagaCurriculumModel = $this->loadModel("VagaCurriculum");
         $todasVagas = $vagaModel->getByEstabelecimento($this->estabelecimentoId);
-        $this->dados['cargos'] = $cargoModel->listarTodos();
+        
+        $this->viewData['cargos'] = $cargoModel->listarTodos();
+        $this->viewData['vaga'] = []; // Garante que o formulário de nova vaga esteja sempre limpo
 
-        foreach ($todasVagas as &$vaga) {
+        // Use um novo array para evitar problemas de referência com o foreach
+        $vagasComContagem = [];
+        foreach ($todasVagas as $vaga) {
             $vaga['num_candidatos'] = $vagaCurriculumModel->countByVagaId($vaga['vaga_id']);
+            $vagasComContagem[] = $vaga;
         }
 
         $vagasAtivas = [];
         $vagasArquivadas = [];
 
-        foreach ($todasVagas as $vaga) {
+        foreach ($vagasComContagem as $vaga) {
             if ($vaga['statusVaga'] == 99) {
                 $vagasArquivadas[] = $vaga;
             } else {
@@ -214,16 +171,16 @@ class Empresa extends ControllerMain
             }
         }
 
-        $this->dados['vagas_ativas'] = $vagasAtivas;
-        $this->dados['vagas_arquivadas'] = $vagasArquivadas;
+        $this->viewData['vagas_ativas'] = $vagasAtivas;
+        $this->viewData['vagas_arquivadas'] = $vagasArquivadas;
 
-        $this->loadView("empresa/vagas", $this->dados, false);
+        $this->loadView("empresa/vagas", $this->viewData, false);
     }
 
     public function salvar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $vagaModel = new VagaModel();
+            $vagaModel = $this->loadModel("Vaga");
 
             $dadosVaga = [
                 'cargo_id' => $_POST['cargo_id'],
@@ -233,7 +190,8 @@ class Empresa extends ControllerMain
                 'vinculo' => $_POST['vinculo'],
                 'dtInicio' => $_POST['dtInicio'],
                 'dtFim' => $_POST['dtFim'],
-                'estabelecimento_id' => $this->estabelecimentoId,
+                'salario' => !empty($_POST['salario']) ? $_POST['salario'] : null,
+                'estabelecimento_id' => $this->estabelecimentoId, 
                 'statusVaga' => 11
             ];
 
@@ -249,33 +207,39 @@ class Empresa extends ControllerMain
         Redirect::page('empresa/vagas');
     }
 
-    public function editar($idVaga = null)
+    public function editar($params = [])
     {
+        $idVaga = $params[0] ?? null;
         if (empty($idVaga)) {
             Redirect::page('empresa/vagas');
             exit;
         }
 
-        $vagaModel = new VagaModel();
-        $cargoModel = new CargoModel();
+        $vagaModel = $this->loadModel("Vaga");
+        $cargoModel = $this->loadModel("Cargo");
 
-        $vaga = $vagaModel->getById($idVaga[0]);
+        $vaga = $vagaModel->getById($idVaga);
+    
+
+        
+        // Esta verificação está correta. O erro é causado pela corrupção de dados
+        // no método 'atualizar'.
         if (!$vaga || $vaga['estabelecimento_id'] != $this->estabelecimentoId) {
              Session::set('flash_msg', ['mensagem' => 'Vaga não encontrada ou não pertence a esta empresa.', 'tipo' => 'error']);
             Redirect::page('empresa/vagas');
             exit;
         }
 
-        $this->dados['vaga'] = $vaga;
-        $this->dados['cargos'] = $cargoModel->listarTodos();
+        $this->viewData['vaga'] = $vaga;
+        $this->viewData['cargos'] = $cargoModel->listarTodos();
 
-        $this->loadView("empresa/editar_vaga", $this->dados, false);
+        $this->loadView("empresa/editar_vaga", $this->viewData, false);
     }
 
     public function atualizar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vaga_id'])) {
-            $vagaModel = new VagaModel();
+            $vagaModel = $this->loadModel("Vaga");
             $idVaga = $_POST['vaga_id'];
 
             $vaga = $vagaModel->getById($idVaga);
@@ -285,19 +249,29 @@ class Empresa extends ControllerMain
                 return;
             }
             
-            $dadosVaga = [
+            // Dados vindos do formulário
+            $dadosForm = [
                 'cargo_id' => $_POST['cargo_id'],
                 'descricao' => $_POST['descricao'],
                 'sobreaVaga' => $_POST['sobreaVaga'],
                 'modalidade' => $_POST['modalidade'],
                 'vinculo' => $_POST['vinculo'],
                 'dtInicio' => $_POST['dtInicio'],
-                'dtFim' => $_POST['dtFim']
+                'dtFim' => $_POST['dtFim'],
+                'salario' => !empty($_POST['salario']) ? $_POST['salario'] : null
             ];
 
-            $originalRules = $vagaModel->validationRules;
-            $updateRules = array_intersect_key($originalRules, $dadosVaga);
-            $vagaModel->validationRules = $updateRules;
+            // *** CORREÇÃO ***
+            // Mescla os dados antigos com os novos dados do formulário
+            // Isso garante que 'estabelecimento_id' e 'statusVaga' não sejam perdidos
+            $dadosVaga = array_merge($vaga, $dadosForm);
+
+            // *** CORREÇÃO ***
+            // Remove a lógica de manipulação de regras de validação.
+            // O modelo deve validar o objeto $dadosVaga completo.
+            // $originalRules = $vagaModel->validationRules; // REMOVIDO
+            // $updateRules = array_intersect_key($originalRules, $dadosVaga); // REMOVIDO
+            // $vagaModel->validationRules = $updateRules; // REMOVIDO
 
             if ($vagaModel->update($idVaga, $dadosVaga)) {
                 Session::set('flash_msg', ['mensagem' => 'Vaga atualizada com sucesso!', 'tipo' => 'success']);
@@ -305,7 +279,7 @@ class Empresa extends ControllerMain
                 Session::set('flash_msg', ['mensagem' => 'Erro ao atualizar a vaga.', 'tipo' => 'error']);
             }
             
-            $vagaModel->validationRules = $originalRules;
+            // $vagaModel->validationRules = $originalRules; // REMOVIDO
 
         } else {
             Session::set('flash_msg', ['mensagem' => 'Requisição inválida.', 'tipo' => 'error']);
@@ -317,24 +291,31 @@ class Empresa extends ControllerMain
     public function excluir()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vaga_id'])) {
-            $vagaModel = new VagaModel();
+            $vagaModel = $this->loadModel("Vaga");
             $idVaga = $_POST['vaga_id'];
 
             $vaga = $vagaModel->getById($idVaga);
             if ($vaga && $vaga['estabelecimento_id'] == $this->estabelecimentoId) {
+                
                 $dadosUpdate = ['statusVaga' => 99];
                 
-                $originalRules = $vagaModel->validationRules;
-                $updateRules = array_intersect_key($originalRules, $dadosUpdate);
-                $vagaModel->validationRules = $updateRules;
+                // *** CORREÇÃO ***
+                // Mescla os dados antigos com os novos para não perder 'estabelecimento_id'
+                $dadosVaga = array_merge($vaga, $dadosUpdate);
 
-                if ($vagaModel->update($idVaga, $dadosUpdate)) {
+                // *** CORREÇÃO ***
+                // Remove a lógica de manipulação de regras de validação.
+                // $originalRules = $vagaModel->validationRules; // REMOVIDO
+                // $updateRules = array_intersect_key($originalRules, $dadosUpdate); // REMOVIDO
+                // $vagaModel->validationRules = $updateRules; // REMOVIDO
+
+                if ($vagaModel->update($idVaga, $dadosVaga)) {
                     Session::set('flash_msg', ['mensagem' => 'Vaga arquivada com sucesso!', 'tipo' => 'success']);
                 } else {
                     Session::set('flash_msg', ['mensagem' => 'Erro ao arquivar a vaga.', 'tipo' => 'error']);
                 }
 
-                $vagaModel->validationRules = $originalRules;
+                // $vagaModel->validationRules = $originalRules; // REMOVIDO
             } else {
                 Session::set('flash_msg', ['mensagem' => 'Ação não permitida.', 'tipo' => 'error']);
             }
@@ -347,25 +328,32 @@ class Empresa extends ControllerMain
     public function atualizarStatus()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vaga_id'], $_POST['statusVaga'])) {
-            $vagaModel = new VagaModel();
+            $vagaModel = $this->loadModel("Vaga");
             $idVaga = $_POST['vaga_id'];
             $status = $_POST['statusVaga'];
 
             $vaga = $vagaModel->getById($idVaga);
             if ($vaga && $vaga['estabelecimento_id'] == $this->estabelecimentoId) {
+                
                 $dadosUpdate = ['statusVaga' => $status];
 
-                $originalRules = $vagaModel->validationRules;
-                $updateRules = array_intersect_key($originalRules, $dadosUpdate);
-                $vagaModel->validationRules = $updateRules;
+                // *** CORREÇÃO ***
+                // Mescla os dados antigos com os novos para não perder 'estabelecimento_id'
+                $dadosVaga = array_merge($vaga, $dadosUpdate);
 
-                if ($vagaModel->update($idVaga, $dadosUpdate)) {
+                // *** CORREÇÃO ***
+                // Remove a lógica de manipulação de regras de validação.
+                // $originalRules = $vagaModel->validationRules; // REMOVIDO
+                // $updateRules = array_intersect_key($originalRules, $dadosUpdate); // REMOVIDO
+                // $vagaModel->validationRules = $updateRules; // REMOVIDO
+
+                if ($vagaModel->update($idVaga, $dadosVaga)) {
                     Session::set('flash_msg', ['mensagem' => 'Status da vaga atualizado com sucesso!', 'tipo' => 'success']);
                 } else {
                     Session::set('flash_msg', ['mensagem' => 'Erro ao atualizar o status da vaga.', 'tipo' => 'error']);
                 }
 
-                $vagaModel->validationRules = $originalRules;
+                // $vagaModel->validationRules = $originalRules; // REMOVIDO
             } else {
                 Session::set('flash_msg', ['mensagem' => 'Ação não permitida.', 'tipo' => 'error']);
             }
@@ -378,17 +366,12 @@ class Empresa extends ControllerMain
 
     public function mensagens()
     {
-        $this->loadView("empresa/mensagens", $this->dados, false);
+        $this->loadView("empresa/mensagens", $this->viewData, false);
     }
 
     public function configuracoes()
     {
-        $usuarioLogado = Session::get('usuario_logado');
-        $estabelecimentoModel = new EstabelecimentoModel();
-        $estabelecimentoDados = $estabelecimentoModel->getById($this->estabelecimentoId);
-        $this->dados['usuario'] = $estabelecimentoDados ? array_merge($usuarioLogado, $estabelecimentoDados) : $usuarioLogado;
-
-        $this->loadView("empresa/configuracoes", $this->dados, false);
+        $this->loadView("empresa/configuracoes", $this->viewData, false);
     }
 
     public function salvarConfiguracoes()
@@ -399,20 +382,39 @@ class Empresa extends ControllerMain
             return;
         }
 
-        $estabelecimentoModel = new EstabelecimentoModel();
+        $estabelecimentoModel = $this->loadModel("Estabelecimento");
         
-        $dadosUpdate = [
-            'nome' => $_POST['nome'] ?? '',
-            'sobre' => $_POST['sobre'] ?? '',
-            'website' => $_POST['website'] ?? ''
+        // Dados do formulário
+        $dadosForm = [
+            'nome' => $_POST['nome'] ?? null,
+            'sobre' => $_POST['sobre'] ?? null,
+            'website' => $_POST['website'] ?? null
         ];
-        
-        $originalRules = $estabelecimentoModel->validationRules;
-        $rulesToApply = array_intersect_key($originalRules, array_filter($dadosUpdate));
-        $estabelecimentoModel->validationRules = $rulesToApply;
 
+        // *** CORREÇÃO ***
+        // Busca dados antigos para mesclar
+        // Supondo que 'usuario' nos viewData contém os dados do estabelecimento
+        $dadosAntigos = $this->viewData['usuario'] ?? [];
+        
+        // Mescla, filtrando valores nulos ou vazios do formulário
+        // para não sobrescrever dados existentes com valores em branco.
+        $dadosUpdate = array_merge($dadosAntigos, array_filter($dadosForm));
+        
+        // *** CORREÇÃO ***
+        // Remove a lógica de manipulação de regras de validação.
+        // $originalRules = $estabelecimentoModel->validationRules; // REMOVIDO
+        // $rulesToApply = array_intersect_key($originalRules, array_filter($dadosUpdate)); // REMOVIDO
+        // $estabelecimentoModel->validationRules = $rulesToApply; // REMOVIDO
+
+        // 21. USA $this->estabelecimentoId (herdado)
         if ($estabelecimentoModel->update($this->estabelecimentoId, $dadosUpdate)) {
             Session::set('flash_msg', ['mensagem' => 'Informações da empresa atualizadas com sucesso!', 'tipo' => 'success']);
+            
+            // Atualiza também a sessão para refletir as mudanças
+            $usuarioLogado = Session::get('usuario_logado');
+            $usuarioLogado = array_merge($usuarioLogado, array_filter($dadosForm));
+            Session::set('usuario_logado', $usuarioLogado);
+
         } else {
             $errors = Session::get('form_errors') ?? [];
             $errorMessage = 'Erro ao atualizar as informações. ';
@@ -425,9 +427,66 @@ class Empresa extends ControllerMain
             Session::set('flash_msg', ['mensagem' => $errorMessage, 'tipo' => 'error']);
         }
 
-        $estabelecimentoModel->validationRules = $originalRules;
+        // $estabelecimentoModel->validationRules = $originalRules; // REMOVIDO
+
+        Redirect::page('empresa/configuracoes');
+    }
+
+    public function alterarSenha()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            Session::set('flash_msg', ['mensagem' => 'Requisição inválida.', 'tipo' => 'error']);
+            Redirect::page('empresa/configuracoes');
+            return;
+        }
+
+        $senhaAtual = $_POST['senha_atual'] ?? '';
+        $novaSenha = $_POST['nova_senha'] ?? '';
+        $confirmarSenha = $_POST['confirmar_senha'] ?? '';
+
+        if (empty($senhaAtual) || empty($novaSenha) || empty($confirmarSenha)) {
+            Session::set('flash_msg', ['mensagem' => 'Todos os campos de senha são obrigatórios.', 'tipo' => 'error']);
+            Redirect::page('empresa/configuracoes');
+            return;
+        }
+
+        if ($novaSenha !== $confirmarSenha) {
+            Session::set('flash_msg', ['mensagem' => 'A nova senha e a confirmação não correspondem.', 'tipo' => 'error']);
+            Redirect::page('empresa/configuracoes');
+            return;
+        }
+
+        $usuarioLogado = Session::get('usuario_logado');
+        $usuarioId = $usuarioLogado['usuario_id'];
+
+        $usuarioModel = $this->loadModel("Usuario"); 
+        $usuario = $usuarioModel->getById($usuarioId);
+
+        if (!$usuario || !password_verify($senhaAtual, $usuario['senha'])) {
+            Session::set('flash_msg', ['mensagem' => 'A senha atual está incorreta.', 'tipo' => 'error']);
+            Redirect::page('empresa/configuracoes');
+            return;
+        }
+
+        $novaSenhaHash = password_hash($novaSenha, PASSWORD_DEFAULT);
+        $dadosUpdate = ['senha' => $novaSenhaHash];
+
+        // Aqui a lógica de validação parcial está correta,
+        // pois você está atualizando um modelo diferente (Usuario)
+        // e só quer validar a senha.
+        $originalRules = $usuarioModel->validationRules;
+        $usuarioModel->validationRules = [
+            'senha' => $originalRules['senha']
+        ];
+
+        if ($usuarioModel->update($usuarioId, $dadosUpdate)) {
+            Session::set('flash_msg', ['mensagem' => 'Senha alterada com sucesso!', 'tipo' => 'success']);
+        } else {
+            Session::set('flash_msg', ['mensagem' => 'Ocorreu um erro ao alterar a senha. Tente novamente.', 'tipo' => 'error']);
+        }
+
+        $usuarioModel->validationRules = $originalRules; 
 
         Redirect::page('empresa/configuracoes');
     }
 }
-

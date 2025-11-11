@@ -50,15 +50,9 @@ class EstabelecimentoModel extends ModelMain
 
     public function updateLogo($id, $logo)
     {
-        // [CORREÇÃO DEFINITIVA]
-        // A sintaxe correta, seguindo o padrão do seu projeto, 
-        // exige a chamada ->table() para especificar a tabela antes do ->where().
         return $this->db->table($this->table)->where($this->primaryKey, $id)->update(['logo' => $logo]);
     }
 
-    /**
-     * Conta o número total de estabelecimentos
-     */
     public function countAll()
     {
         return $this->db->table($this->table)->findCount();

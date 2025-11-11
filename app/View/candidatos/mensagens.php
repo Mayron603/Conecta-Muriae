@@ -1,54 +1,6 @@
 <?php 
-    // [CORREÇÃO] O cabeçalho específico do candidato é necessário aqui.
     include_once __DIR__ . '/comuns/candidato_cabecalho.php'; 
 ?>
-<style>
-    .chat-container {
-        display: flex;
-        height: 70vh;
-    }
-    .conversations-list {
-        border-right: 1px solid #dee2e6;
-        flex-basis: 25%;
-        overflow-y: auto;
-    }
-    .chat-window {
-        flex-basis: 75%;
-        display: flex;
-        flex-direction: column;
-    }
-    .chat-messages {
-        flex-grow: 1;
-        overflow-y: auto;
-        padding: 1rem;
-    }
-    .message {
-        margin-bottom: 1rem;
-    }
-    .message p {
-        padding: 0.5rem 1rem;
-        border-radius: 1rem;
-        max-width: 70%;
-        display: inline-block;
-        word-wrap: break-word;
-    }
-    .message.sent {
-        text-align: right;
-    }
-    .message.sent p {
-        background-color: #0d6efd;
-        color: white;
-    }
-    .message.received p {
-        background-color: #e9ecef;
-        color: #333;
-    }
-    .chat-form {
-        padding: 1rem;
-        border-top: 1px solid #dee2e6;
-    }
-</style>
-
 <?php 
 $conversas = $dados['conversas'] ?? [];
 $mensagens = $dados['mensagens'] ?? [];
@@ -134,14 +86,6 @@ if ($id_conversa_ativa) {
         </div>
     </div>
 </div>
-
-<script>
-    const chatMessages = document.getElementById('chat-messages');
-    if (chatMessages) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-</script>
 <?php 
-    // [CORREÇÃO] O rodapé específico do candidato também é necessário.
     include_once __DIR__ . '/comuns/candidato_rodape.php'; 
 ?>

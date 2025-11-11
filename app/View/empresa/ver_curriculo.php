@@ -27,9 +27,19 @@ function formatarData($data) {
 
 <div class="container-fluid py-5" style="background-color: #f8f9fa;">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="display-5 text-dark">Currículo de <?= htmlspecialchars($curriculo['nome'] ?? 'Candidato'); ?></h1>
-            <a href="javascript:history.back()" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Voltar</a>
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+            <h1 class="display-5 text-dark mb-2 mb-md-0">Currículo de <?= htmlspecialchars($curriculo['nome'] ?? 'Candidato'); ?></h1>
+            <div class="d-flex gap-2">
+                <?php if (!empty($curriculo['arquivo_curriculo'])) : ?>
+                    <a href="<?= baseUrl() . 'uploads/curriculos/' . htmlspecialchars($curriculo['arquivo_curriculo']); ?>" target="_blank" class="btn btn-primary">
+                       <i class="fas fa-file-download me-2"></i>Baixar Currículo
+                    </a>
+                <?php endif; ?>
+            <a href="<?= baseUrl() . 'mensagem/iniciarConversa/' . ($curriculo['curriculum_id'] ?? '#') ?>" class="btn btn-info text-white">
+                <i class="fas fa-paper-plane me-2"></i>Enviar Mensagem
+                </a>
+                <a href="javascript:history.back()" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Voltar</a>
+            </div>
         </div>
 
         <!-- Dados Pessoais -->

@@ -1,6 +1,5 @@
 <?php 
     $pathView = __DIR__ . '/../../View/';
-    // Carrega o cabeçalho específico da empresa, que pode conter scripts globais.
     require_once $pathView . 'empresa/comuns/empresa_cabecalho.php'; 
 
     $flashMessage = Core\Library\Session::get('flash_msg');
@@ -9,7 +8,6 @@
     }
 ?>
 
-<!-- Adicionando a biblioteca Cropper.js -->
 <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
@@ -25,7 +23,6 @@
                 </div>
             <?php endif; ?>
 
-            <!-- Card para alterar a Logo -->
             <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Logo da Empresa</h5>
@@ -47,8 +44,7 @@
                 </div>
             </div>
 
-            <!-- Card para outras informações -->
-            <div class="card shadow-sm">
+            <div class="card shadow-sm mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Informações da Empresa</h5>
                 </div>
@@ -71,11 +67,35 @@
                     </form>
                 </div>
             </div>
+
+            <!-- Formulário de Alteração de Senha -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Alterar Senha</h5>
+                </div>
+                <div class="card-body">
+                    <form action="<?= baseUrl() ?>empresa/alterarSenha" method="post">
+                        <div class="mb-3">
+                            <label for="senha_atual" class="form-label">Senha Atual</label>
+                            <input type="password" class="form-control" id="senha_atual" name="senha_atual" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="nova_senha" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="nova_senha" name="nova_senha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmar_senha" class="form-label">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="confirmar_senha" name="confirmar_senha" required>
+                        </div>
+                        <hr>
+                        <button type="submit" class="btn btn-primary">Alterar Senha</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para recorte da imagem -->
 <div class="modal fade" id="cropModal" tabindex="-1" aria-labelledby="cropModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -132,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function () {
     modalElement.addEventListener('hidden.bs.modal', function () {
         cropper.destroy();
         cropper = null;
-        input.value = ''; // Limpa o input para permitir selecionar o mesmo arquivo novamente
+        input.value = '';
     });
 
     cropAndSaveBtn.addEventListener('click', function () {
@@ -161,16 +181,13 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(response => response.json())
             .then(result => {
                 if (result.success && result.url) {
-                    const newUrl = result.url + '?t=' + new Date().getTime(); // Cache busting
-                    // Atualiza a imagem na página de configurações
+                    const newUrl = result.url + '?t=' + new Date().getTime();
                     document.getElementById('logoPreview').src = newUrl;
-                    // Atualiza a imagem na sidebar
                     const sidebarLogo = document.getElementById('sidebarLogoPreview');
                     if (sidebarLogo) {
                         if (sidebarLogo.tagName.toLowerCase() === 'img'){
                            sidebarLogo.src = newUrl; 
                         } else {
-                            // Recria o elemento img se era o ícone default
                             const newImg = document.createElement('img');
                             newImg.id = 'sidebarLogoPreview';
                             newImg.src = newUrl;

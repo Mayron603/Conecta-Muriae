@@ -21,8 +21,6 @@ class CidadeModel extends ModelMain
     ];
 
     /**
-     * Busca todas as cidades ordenadas por nome
-     *
      * @return array
      */
     public function getAll(): array
@@ -33,8 +31,6 @@ class CidadeModel extends ModelMain
     }
 
     /**
-     * Lista cidades ordenadas por UF e nome
-     *
      * @return array
      */
     public function listaCidade()
@@ -45,10 +41,8 @@ class CidadeModel extends ModelMain
     }
 
     /**
-     * Busca cidade pelo nome e UF
-     *
-     * @param string $cidade
-     * @param string $uf
+     * @param string
+     * @param string 
      * @return array|null
      */
     public function getByCidadeAndUf(string $cidade, string $uf)
@@ -60,10 +54,8 @@ class CidadeModel extends ModelMain
     }
 
     /**
-     * Cria cidade se não existir e retorna o ID
-     *
-     * @param string $cidade
-     * @param string $uf
+     * @param string 
+     * @param string 
      * @return int
      */
     public function getOrCreateCidadeId(string $cidade, string $uf): int

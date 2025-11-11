@@ -33,5 +33,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript -->
     <script src="<?= baseUrl() ?>assets/js/index.js"></script>
+    <script src="<?= baseUrl() ?>assets/js/empresa.js"></script>
 </body>
 </html>

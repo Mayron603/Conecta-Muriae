@@ -3,23 +3,19 @@
 namespace App\Model;
 
 use Core\Library\ModelMain;
-use App\Model\CurriculumModel; 
 
 class VagaCurriculumModel extends ModelMain
 {
     protected $table = "vaga_curriculum";
     protected $primaryKey = ["vaga_id", "curriculum_id"];
 
-    public function getCandidaturasPorPessoaFisicaId(int $pessoaFisicaId): array
+    public function getCandidaturasPorCurriculumId(int $curriculumId): array
     {
-        $curriculumModel = new CurriculumModel();
-        $curriculum = $curriculumModel->getByPessoaFisicaId($pessoaFisicaId);
 
-        if (empty($curriculum) || !isset($curriculum['curriculum_id'])) {
+        if (empty($curriculumId)) {
             return [];
         }
-        $curriculumId = $curriculum['curriculum_id'];
-
+        
         $sql = "SELECT * FROM {$this->table} WHERE curriculum_id = ? ORDER BY dateCandidatura DESC";
         $rsc = $this->db->dbSelect($sql, [$curriculumId]);
         $result = $this->db->dbBuscaArrayAll($rsc);
@@ -60,7 +56,7 @@ class VagaCurriculumModel extends ModelMain
         }
 
         return $this->db->table('vaga_curriculum vc')
-            ->select('p.nome, c.curriculum_id, vc.dateCandidatura')
+            ->select('p.nome, c.curriculum_id, vc.dateCandidatura, c.arquivo_curriculo')
             ->join('curriculum c', 'vc.curriculum_id = c.curriculum_id')
             ->join('pessoa_fisica p', 'c.pessoa_fisica_id = p.pessoa_fisica_id')
             ->where('vc.vaga_id', $vagaId)

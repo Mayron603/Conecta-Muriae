@@ -27,6 +27,7 @@ class Login extends ControllerMain
         $this->termoAceiteModel = new TermoAceiteModel();
         $this->loadHelper("formHelper");
         $this->loadHelper("emailHelper");
+        $this->loadHelper("validationHelper");
     }
 
     public function index()
@@ -119,22 +120,6 @@ class Login extends ControllerMain
         return Redirect::page('Login');
     }
 
-    private function validaCPF($cpf) {
-        $cpf = preg_replace( '/[^0-9]/', '', $cpf);
-        if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) {
-            return false;
-        }
-        for ($t = 9; $t < 11; $t++) {
-            for ($d = 0, $c = 0; $c < $t; $c++) {
-                $d += $cpf[$c] * (($t + 1) - $c);
-            }
-            $d = ((10 * $d) % 11) % 10;
-            if ($cpf[$c] != $d) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     public function registrar()
     {
@@ -174,7 +159,8 @@ class Login extends ControllerMain
         }
         if ($tipo === 'CN') {
             $cpf = preg_replace( '/[^0-9]/', '', $post['cpf']);
-            if (!$this->validaCPF($cpf)) {
+            
+            if (!validaCPF($cpf)) {
                 return $setError('O CPF informado é inválido.');
             }
             if ($this->pessoaFisicaModel->getCpf($cpf)) {

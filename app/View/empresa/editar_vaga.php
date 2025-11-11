@@ -1,33 +1,14 @@
 <?php 
     $pathView = __DIR__ . '/../../View/';
     require_once $pathView . 'empresa/comuns/empresa_cabecalho.php'; 
-
-    $nomeEmpresa = Core\Library\Session::get('usuario_logado')['nome_fantasia'] ?? Core\Library\Session::get('usuario_logado')['login'] ?? 'Empresa';
 ?>
 
 <div class="container-fluid py-4">
     <div class="row">
-        <div class="col-lg-3">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body text-center">
-                    <div class="position-relative mx-auto mb-3">
-                        <img src="https://img.freepik.com/vetores-premium/logotipo-da-empresa-de-tecnologia-moderna_23-2148465042.jpg" alt="Logo da Empresa" class="company-logo border border-3 border-white shadow">
-                    </div>
-                    <h4 class="mb-1"><?= htmlspecialchars($nomeEmpresa) ?></h4>
-                    <p class="text-muted mb-3">Tecnologia e Inovação</p>
-                    <a href="#" class="btn btn-sm btn-primary">Completar Perfil</a>
-                </div>
-            </div>
-            <div class="card shadow-sm">
-                <div class="list-group list-group-flush">
-                    <a href="<?= baseUrl() ?>empresa/index" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-                    <a href="<?= baseUrl() ?>empresa/vagas" class="list-group-item list-group-item-action active"><i class="fas fa-briefcase me-2"></i> Minhas Vagas</a>
-                    <a href="<?= baseUrl() ?>empresa/candidatos" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Candidatos</a>
-                    <a href="<?= baseUrl() ?>empresa/mensagens" class="list-group-item list-group-item-action"><i class="fas fa-envelope me-2"></i> Mensagens</a>
-                    <a href="<?= baseUrl() ?>empresa/configuracoes" class="list-group-item list-group-item-action"><i class="fas fa-cog me-2"></i> Configurações</a>
-                </div>
-            </div>
-        </div>
+
+        <?php 
+            require_once $pathView . 'empresa/comuns/sidebar.php'; 
+        ?>
 
         <div class="col-lg-9">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -63,6 +44,11 @@
                                 </select>
                             </div>
 
+                            <div class="col-md-6">
+                                <label for="salario" class="form-label">Salário (Opcional)</label>
+                                <input type="number" class="form-control" id="salario" name="salario" value="<?= htmlspecialchars($vaga['salario'] ?? '') ?>" placeholder="Ex: 3500.00" step="0.01" min="0">
+                                <div class="form-text">Deixe em branco se for "A combinar".</div>
+                            </div>
                             <div class="col-md-6">
                                 <label for="dtInicio" class="form-label">Data de Início*</label>
                                 <input type="date" class="form-control" id="dtInicio" name="dtInicio" value="<?= $vaga['dtInicio'] ?>" required>
@@ -104,5 +90,5 @@
 
 <?php 
     require_once $pathView . 'comuns/rodape.php'; 
-    require_once $pathView . 'empresa/comuns/empresa_rodape.php';
+    
 ?>

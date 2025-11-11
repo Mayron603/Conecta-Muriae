@@ -1,14 +1,16 @@
 <?php
-// app\controller\Home.php
 
 namespace App\Controller;
 
 use Core\Library\ControllerMain;
+use Core\Library\Session;
 
 class Home extends ControllerMain
 {
     public function index()
     {
+        $this->auxiliarConstruct();
+
         $vagaModel = $this->loadModel("Vaga");
         $estabelecimentoModel = $this->loadModel("Estabelecimento");
         $pessoaFisicaModel = $this->loadModel("PessoaFisica");
@@ -17,6 +19,7 @@ class Home extends ControllerMain
             'vagasAtivas' => $vagaModel->countAtivas(),
             'empresasCadastradas' => $estabelecimentoModel->countAll(),
             'candidatos' => $pessoaFisicaModel->countAll(),
+            'usuario_logado' => Session::get('usuario_logado')
         ];
 
         $this->loadView("home", $dados);

@@ -32,8 +32,8 @@
                             <i class="fas fa-phone-alt text-primary"></i>
                         </div>
                         <h3 class="h5 fw-bold mb-3">Telefone</h3>
-                        <p class="mb-2">(32) 3721-1234</p>
-                        <p class="mb-0">(32) 99876-5432 (WhatsApp)</p>
+                        <p class="mb-2">(32) 3721-2301</p>
+                        <p class="mb-0">(32) 98486-3138 (WhatsApp)</p>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,6 @@
                         </div>
                         <h3 class="h5 fw-bold mb-3">Email</h3>
                         <p class="mb-2">contato@muriaeempregos.com</p>
-                        <p class="mb-0">suporte@muriaeempregos.com</p>
                     </div>
                 </div>
             </div>

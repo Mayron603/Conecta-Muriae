@@ -1,7 +1,6 @@
 <?php
 use Core\Library\Session;
 
-// Pega mensagem flash, se existir
 $flash = Session::get('flash_msg') ?? null;
 Session::destroy('flash_msg');
 ?>

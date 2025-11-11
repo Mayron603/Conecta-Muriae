@@ -2,7 +2,6 @@
 include_once __DIR__ . "/comuns/candidato_cabecalho.php"; 
 
 $usuario = $dados['usuario'] ?? [];
-// CORREÇÃO: Usar o campo 'nome' que contém o nome completo.
 $nomeCompleto = $usuario['nome'] ?? '';
 
 ?>
@@ -15,7 +14,6 @@ $nomeCompleto = $usuario['nome'] ?? '';
         <div class="col-lg-9">
 
             <?php
-            // Bloco para exibir mensagens de sucesso ou erro
             $mensagem_sucesso = Core\Library\Session::get('mensagem_sucesso');
             $mensagem_erro = Core\Library\Session::get('mensagem_erro');
 

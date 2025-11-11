@@ -21,15 +21,6 @@ class CurriculumQualificacaoModel extends ModelMain
     public function salvar(array $data)
     {
         $id = $data[$this->primaryKey] ?? null;
-
-        if (!$id && isset($_SESSION['candidato_id'])) {
-            $curriculumModel = new CurriculumModel();
-            $curriculum = $curriculumModel->getByCandidatoId($_SESSION['candidato_id']);
-            if ($curriculum) {
-                $data['curriculum_id'] = $curriculum['curriculum_id'];
-            }
-        }
-
         if ($id) {
             unset($data[$this->primaryKey]);
             return $this->update($id, $data);

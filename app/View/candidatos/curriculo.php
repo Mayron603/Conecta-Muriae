@@ -1,23 +1,17 @@
 <?php
-// Extrai as variáveis para facilitar o uso na view
 $usuario = $dados['usuario'] ?? [];
 $curriculum = $dados['curriculum'] ?? [];
 $escolaridades = $dados['escolaridades'] ?? [];
 $experiencias = $dados['experiencias'] ?? [];
 $qualificacoes = $dados['qualificacoes'] ?? [];
 $niveis_escolaridade = $dados['niveis_escolaridade'] ?? [];
-$cargos = $dados['cargos'] ?? []; // <-- Variável com a lista de cargos
+$cargos = $dados['cargos'] ?? []; 
 
-// Verifica se o currículo já existe para habilitar/desabilitar botões
 $curriculoId = $curriculum['curriculum_id'] ?? null;
 $isCurriculoPendente = empty($curriculoId);
 
-// Inclui o cabeçalho da área do candidato
-// Idealmente, o CSS do Cropper.js deve ser colocado no cabeçalho
 include_once __DIR__ . "/comuns/candidato_cabecalho.php";
 ?>
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css" rel="stylesheet">
 
 <div class="container-fluid py-4">
     <div class="row">
@@ -78,6 +72,33 @@ include_once __DIR__ . "/comuns/candidato_cabecalho.php";
             </div>
 
             <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <form action="<?= baseUrl() ?>candidatos/uploadCurriculo" method="post" enctype="multipart/form-data">
+                        <h6 class="text-primary mb-3">Subir novo currículo</h6>
+                        <div class="row g-3 align-items-center">
+                            <div class="col">
+                                <label for="curriculo_arquivo" class="visually-hidden">Currículo em Arquivo</label>
+                                <input type="file" class="form-control" id="curriculo_arquivo" name="curriculo_arquivo" accept=".pdf,.doc,.docx" required>
+                            </div>
+                            <div class="col-auto">
+                                <button type="submit" class="btn btn-secondary">Enviar Arquivo</button>
+                            </div>
+                        </div>
+                        <?php if (!empty($curriculum['arquivo_curriculo'])): ?>
+                            <div class="mt-3">
+                                <p class="mb-1"><strong>Currículo atual:</strong></p>
+                                <a href="<?= baseUrl() . 'uploads/curriculos/' . $curriculum['arquivo_curriculo'] ?>" target="_blank" class="btn btn-sm btn-outline-info">
+                                    <i class="fas fa-eye me-2"></i>Ver Currículo
+                                </a>
+                                <a href="<?= baseUrl() ?>candidatos/excluirCurriculo" class="btn btn-sm btn-outline-danger" onclick="return confirm('Tem certeza que deseja excluir seu currículo?');">
+                                    <i class="fas fa-trash me-2"></i>Excluir Currículo
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
+            <div class="card shadow-sm mb-4">
                 <div class="card-header bg-light"><h5 class="mb-0">Foto de Perfil</h5></div>
                 <div class="card-body">
                     <div class="row align-items-center">
@@ -91,10 +112,7 @@ include_once __DIR__ . "/comuns/candidato_cabecalho.php";
                             <img src="<?= $fotoUrl ?>" alt="Foto de Perfil" class="img-thumbnail rounded-circle" style="width:150px; height:150px; object-fit:cover;">
                         </div>
                         <div class="col-md-9">
-                            <label for="inputFoto" class="form-label">Alterar foto de perfil</label>
-                            <input class="form-control d-none" type="file" id="inputFoto" accept="image/png, image/jpeg, image/gif">
-                            
-                            <button type="button" class="btn btn-primary" onclick="document.getElementById('inputFoto').click();" <?= $isCurriculoPendente ? 'disabled' : '' ?>>
+                            <button type="button" class="btn btn-primary" onclick="document.getElementById('inputFoto')?.click();" <?= $isCurriculoPendente ? 'disabled' : '' ?>>
                                 <i class="fas fa-upload me-2"></i> Escolher Nova Foto
                             </button>
                             <div class="form-text mt-2">Você poderá recortar a imagem antes de salvar.</div>
@@ -102,6 +120,9 @@ include_once __DIR__ . "/comuns/candidato_cabecalho.php";
                             <?php if ($isCurriculoPendente): ?>
                                 <p class="text-danger fst-italic mt-2">Salve seus dados principais para poder enviar uma foto.</p>
                             <?php endif; ?>
+                             <p class="text-muted mt-2 mb-0 small">
+                                Você também pode alterar a foto clicando na sua imagem na barra lateral.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -309,123 +330,6 @@ include_once __DIR__ . "/comuns/candidato_cabecalho.php";
         </div>
     </div>
 </div>
-
-<div class="modal fade" id="modalCropFoto" tabindex="-1" aria-labelledby="modalCropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalCropLabel">Recortar Foto de Perfil</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div>
-                    <img id="imageToCrop" src="" style="max-width: 100%;">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="cropAndUpload">Salvar Foto</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-
-<script>
-function toggleOutroCargo(selectElement, targetId) {
-    const targetDiv = document.getElementById(targetId);
-    if (selectElement.value === "") {
-        targetDiv.style.display = 'block';
-    } else {
-        targetDiv.style.display = 'none';
-        const input = targetDiv.querySelector('input[name="cargoDescricao"]');
-        if (input) {
-            input.value = ''; // Limpa o campo de texto se uma opção for selecionada
-        }
-    }
-}
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const inputFoto = document.getElementById('inputFoto');
-    const modalCropFoto = new bootstrap.Modal(document.getElementById('modalCropFoto'));
-    const imageToCrop = document.getElementById('imageToCrop');
-    const cropAndUploadBtn = document.getElementById('cropAndUpload');
-    let cropper;
-
-    // 1. Quando um arquivo é escolhido no input
-    inputFoto.addEventListener('change', function (e) {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                imageToCrop.src = event.target.result;
-                modalCropFoto.show();
-            };
-            reader.readAsDataURL(files[0]);
-        }
-    });
-
-    // 2. Quando o modal é exibido, inicializa o Cropper.js
-    document.getElementById('modalCropFoto').addEventListener('shown.bs.modal', function () {
-        cropper = new Cropper(imageToCrop, {
-            aspectRatio: 1 / 1, // Força um corte quadrado
-            viewMode: 1,
-            dragMode: 'move',
-            background: false,
-        });
-    });
-
-    // 3. Quando o modal é fechado, destrói a instância do Cropper
-    document.getElementById('modalCropFoto').addEventListener('hidden.bs.modal', function () {
-        cropper.destroy();
-        cropper = null;
-        inputFoto.value = ''; // Limpa o input
-    });
-
-    // 4. Quando o botão "Salvar Foto" é clicado
-    cropAndUploadBtn.addEventListener('click', function () {
-        this.disabled = true;
-        this.innerHTML = 'Enviando...';
-
-        cropper.getCroppedCanvas({
-            width: 400, // Largura da imagem final
-            height: 400, // Altura da imagem final
-        }).toBlob(function (blob) {
-            const formData = new FormData();
-            // O nome 'foto' deve ser o mesmo esperado no seu controller PHP
-            formData.append('foto', blob, 'foto_perfil.jpg'); 
-            
-            // Envia a imagem para o servidor
-            fetch('<?= baseUrl() ?>candidatos/salvarFoto', { // Rota do seu controller para salvar
-                method: 'POST',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload(); // Recarrega a página em caso de sucesso
-                } else {
-                    alert(data.message || 'Ocorreu um erro ao enviar a foto.');
-                    cropAndUploadBtn.disabled = false;
-                    cropAndUploadBtn.innerHTML = 'Salvar Foto';
-                }
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                alert('Ocorreu um erro de comunicação com o servidor.');
-                cropAndUploadBtn.disabled = false;
-                cropAndUploadBtn.innerHTML = 'Salvar Foto';
-            });
-
-        }, 'image/jpeg');
-    });
-});
-</script>
-
 <?php
 include_once __DIR__ . "/comuns/candidato_rodape.php";
 ?>

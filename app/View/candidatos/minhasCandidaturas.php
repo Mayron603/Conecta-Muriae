@@ -40,7 +40,6 @@ function getStatusCandidatura($status) {
                                     <th>Vaga</th>
                                     <th>Empresa</th>
                                     <th>Data da Candidatura</th>
-                                    <th>Status</th>
                                     <th>Ações</th>
                                 </tr>
                             </thead>
@@ -63,10 +62,6 @@ function getStatusCandidatura($status) {
                                             <td><?= htmlspecialchars($item['vaga']['nome_fantasia'] ?? 'Empresa não encontrada') ?></td>
                                             <td><?= !empty($item['candidatura']['dateCandidatura']) ? date("d/m/Y", strtotime($item['candidatura']['dateCandidatura'])) : '<span class="text-muted">N/A</span>' ?></td>
                                             <td>
-                                                <?php $statusInfo = getStatusCandidatura($item['candidatura']['status_candidatura'] ?? 0); ?>
-                                                <span class="badge <?= $statusInfo['class'] ?>"><?= $statusInfo['text'] ?></span>
-                                            </td>
-                                            <td>
                                                 <a href="<?= baseUrl() ?>vagas/visualizar/<?= $item['vaga']['vaga_id'] ?? '#' ?>" class="btn btn-sm btn-outline-primary">Ver Vaga</a>
                                             </td>
                                         </tr>
@@ -80,3 +75,7 @@ function getStatusCandidatura($status) {
         </div>
     </div>
 </div>
+
+<?php 
+include_once __DIR__ . "/comuns/candidato_rodape.php"; 
+?>

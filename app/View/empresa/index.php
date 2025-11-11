@@ -7,17 +7,14 @@
     <div class="row">
         
         <?php 
-            // Carrega a nova sidebar padronizada
             require_once $pathView . 'empresa/comuns/sidebar.php'; 
         ?>
 
-        <!-- Content Area -->
         <div class="col-lg-9">
-            <!-- Welcome Card -->
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h2 class="h4 mb-0">Bem-vindo, <?= htmlspecialchars($dados['usuario']['nomeFantasia'] ?? 'Empresa') ?>!</h2>
+                        <h2 class="h4 mb-0">Bem-vindo, <?= htmlspecialchars($nomeCompleto) ?>!</h2>
                         <a href="<?= baseUrl() ?>empresa/vagas/add" class="btn btn-sm btn-outline-primary">
                             <i class="fas fa-plus me-1"></i> Nova Vaga
                         </a>
@@ -82,10 +79,12 @@
                                                 <small class="text-muted">Publicada em <?= date('d/m/Y', strtotime($vaga['dtInicio'])) ?></small>
                                             </div>
                                             <div class="d-flex align-items-start mb-3">
-                                                <img src="https://img.freepik.com/vetores-premium/logotipo-da-empresa-de-tecnologia-moderna_23-2148465042.jpg" alt="Logo Empresa" class="me-3 rounded" style="width: 60px; height: 60px; object-fit: contain;">
+                                                
+                                                <img src="<?= htmlspecialchars($logoUrl) ?>" alt="Logo Empresa" class="me-3 rounded" style="width: 60px; height: 60px; object-fit: contain;">
+                                                
                                                 <div>
                                                     <h3 class="h5 mb-1"><?= htmlspecialchars($vaga['cargo_descricao'] ?? 'Cargo não informado') ?></h3>
-                                                    <p class="text-muted mb-0"><?= htmlspecialchars($dados['usuario']['nomeFantasia'] ?? 'Empresa') ?></p>
+                                                    <p class="text-muted mb-0"><?= htmlspecialchars($nomeCompleto) ?></p>
                                                 </div>
                                             </div>
                                             

@@ -11,9 +11,8 @@
 </head>
 <body>
     <?php 
-        // Recupera os dados do formulário da sessão, se existirem
         $formData = Core\Library\Session::get('form_data');
-        Core\Library\Session::destroy('form_data'); // Limpa para não repopular em novas visitas
+        Core\Library\Session::destroy('form_data'); 
     ?>
     <section class="py-5">
         <div class="container">
@@ -128,51 +127,7 @@
         </div>
     </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tipoSelect = document.getElementById('tipo');
-            const pfFields = document.getElementById('pessoaFisicaFields');
-            const estFields = document.getElementById('estabelecimentoFields');
-            const nomeInput = document.getElementById('nome');
-            const cpfInput = document.getElementById('cpf');
-            const estNomeInput = document.getElementById('estabelecimento_nome');
-            const estEmailInput = document.getElementById('estabelecimento_email');
+    <script src="<?= baseUrl() ?>assets/js/auth.js"></script>
 
-            // Função para alternar campos com base no tipo de conta
-            function toggleFields() {
-                const value = tipoSelect.value;
-                pfFields.classList.add('d-none');
-                nomeInput.required = false;
-                cpfInput.required = false;
-                estFields.classList.add('d-none');
-                estNomeInput.required = false;
-                estEmailInput.required = false;
-
-                if (value === 'CN') {
-                    pfFields.classList.remove('d-none');
-                    nomeInput.required = true;
-                    cpfInput.required = true;
-                } else if (value === 'A') {
-                    estFields.classList.remove('d-none');
-                    estNomeInput.required = true;
-                    estEmailInput.required = true;
-                }
-            }
-
-            tipoSelect.addEventListener('change', toggleFields);
-            // Run on page load para garantir que os campos corretos sejam exibidos
-            // caso o formulário seja repopulado após um erro.
-            toggleFields(); 
-
-            // Aplica a máscara de CPF
-            cpfInput.addEventListener('input', function (e) {
-                let value = e.target.value.replace(/\D/g, '');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d)/, '$1.$2');
-                value = value.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-                e.target.value = value;
-            });
-        });
-    </script>
 </body>
 </html>

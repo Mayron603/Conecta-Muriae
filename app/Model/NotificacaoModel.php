@@ -26,7 +26,6 @@ class NotificacaoModel extends ModelMain
 
     public function getByPessoaFisicaId($pessoaFisicaId, $limit = 20)
     {
-        // CORREÇÃO FINAL: Usando o método limit() que agora existe.
         return $this->db->where('pessoa_fisica_id', $pessoaFisicaId)
                       ->orderBy('dataCriacao', 'DESC')
                       ->limit($limit) 

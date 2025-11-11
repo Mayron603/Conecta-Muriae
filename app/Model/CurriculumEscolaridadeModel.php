@@ -29,6 +29,10 @@ class CurriculumEscolaridadeModel extends ModelMain
             ->findAll();
     }
 
+    /**
+     * @param array 
+     * @return bool|int 
+     */
     public function salvar(array $data)
     {
         if (isset($data['curriculum_id'])) {
@@ -37,14 +41,6 @@ class CurriculumEscolaridadeModel extends ModelMain
         }
 
         $id = $data[$this->primaryKey] ?? null;
-
-        if (!$id && isset($_SESSION['candidato_id']) && !isset($data['curriculum_curriculum_id'])) {
-            $curriculumModel = new CurriculumModel();
-            $curriculum = $curriculumModel->getByCandidatoId($_SESSION['candidato_id']);
-            if ($curriculum) {
-                $data['curriculum_curriculum_id'] = $curriculum['curriculum_id'];
-            }
-        }
 
         if ($id) {
             return $this->update($id, $data);

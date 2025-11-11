@@ -1,8 +1,8 @@
-<!-- Modal Nova Vaga -->
 <div class="modal fade" id="novaVagaModal" tabindex="-1" aria-labelledby="novaVagaModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form action="<?= baseUrl() ?>empresa/salvar" method="POST">
+            <form id="formNovaVaga" action="<?= baseUrl() ?>empresa/salvar" method="POST">
+                <input type="hidden" name="statusVaga" value="1">
                 <div class="modal-header">
                     <h5 class="modal-title" id="novaVagaModalLabel">Criar Nova Vaga</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -32,6 +32,11 @@
                             </select>
                         </div>
 
+                        <div class="col-md-6">
+                            <label for="salario" class="form-label">Salário (Opcional)</label>
+                            <input type="number" class="form-control" id="salario" name="salario" placeholder="Ex: 3500.00" step="0.01" min="0">
+                            <div class="form-text">Deixe em branco se for "A combinar".</div>
+                        </div>
                         <div class="col-md-6">
                             <label for="dtInicio" class="form-label">Data de Início*</label>
                             <input type="date" class="form-control" id="dtInicio" name="dtInicio" required>
