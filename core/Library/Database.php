@@ -741,7 +741,6 @@ class Database
 
     /**
      * delete
-     *
      * @return int
      */
     public function delete()
