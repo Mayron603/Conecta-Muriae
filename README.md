@@ -1,141 +1,43 @@
-# AtomPHP
+# Conecta Muriaé - Seu Portal de Oportunidades
 
-**AtomPHP** é um micro-framework PHP simples e eficiente, ideal para projetos pequenos e médios que precisam de uma base enxuta, organizada e funcional. O foco do AtomPHP é oferecer uma estrutura rápida para criação de aplicações web em PHP, com rotas, controllers, views e banco de dados de forma clara e objetiva.
+Bem-vindo ao Conecta Muriaé! Nossa missão é fortalecer a comunidade local, conectando os melhores talentos da nossa cidade com as empresas que fazem a diferença em Muriaé e região.
 
-## 🚀 Recursos
-
-- Estrutura MVC básica (Model-View-Controller)
-- Sistema simples de rotas
-- Suporte a controllers e views
-- Autoload de classes via PSR-4 (Composer)
-- Configuração por arquivos `.env`
-- Pronto para integração com banco de dados
-
-## 📁 Estrutura do Projeto
-
-```
-atomphp/
-├── app/
-│   ├── controllers/
-│   ├── models/
-│   └── views/
-├── core/
-│   ├── App.php
-│   ├── Controller.php
-│   └── Route.php
-├── public/
-│   └── index.php
-├── .env
-├── composer.json
-└── LICENSE
-└── README.md
-```
-
-- **app/**: Contém o código da aplicação (controllers, models e views).
-- **core/**: Contém o núcleo do framework, como roteamento e carregamento das classes.
-- **public/**: Diretório público que contém o ponto de entrada da aplicação (`index.php`).
-- **.env**: Arquivo de configuração com variáveis de ambiente.
-- **composer.json**: Define dependências do projeto.
-
-## 🧩 Requisitos
-
-- PHP 7.4 ou superior
-- Composer instalado globalmente
-
-## 🔧 Instalação
-
-Siga os passos abaixo para configurar o projeto localmente:
-
-1. **Clone este repositório:**
-
-```bash
-git clone https://github.com/aldecirfonseca/atomphp.git
-```
-
-2. **Acesse o diretório do projeto:**
-
-```bash
-cd atomphp
-```
-
-3. **Instale as dependências via Composer:**
-
-```bash
-composer install
-```
-
-4. **Renomeie o arquivo `.env.example` para `.env`:**
-
-```bash
-cp .env.example .env
-```
-
-5. **Configure as variáveis de ambiente no arquivo `.env`.**  
-   Altere as configurações conforme seu ambiente (ex: banco de dados, ambiente de desenvolvimento, etc).
-
-6. **Configure seu servidor web para apontar para o diretório `public/` como raiz do projeto.**  
-   Se estiver usando o PHP embutido, você pode rodar com:
-
-```bash
-php -S localhost:8000 -t public
-```
-
-7. **Acesse sua aplicação no navegador:**
-
-```
-http://localhost:8000
-```
-
-## ▶️ Como Usar
-
-- Toda requisição entra pelo `public/index.php`.
-- As rotas são geradas com base nos controllers em `app/controllers/`.
-- Os métodos dos controllers são chamados de acordo com a URL.
-- As views são carregadas a partir de `app/views/`.
-
-**Exemplo de URL:**
-
-```
-http://localhost/usuario/listar
-```
-
-Essa URL chamará o método `listar()` da classe `UsuarioController`.
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Para contribuir com este projeto:
-
-1. Faça um **fork** do projeto.
-2. Crie uma nova branch com sua feature ou correção:
-
-```bash
-git checkout -b minha-feature
-```
-
-3. Commit suas alterações:
-
-```bash
-git commit -m 'Adiciona minha nova feature'
-```
-
-4. Envie para o seu repositório remoto:
-
-```bash
-git push origin minha-feature
-```
-
-5. Abra um **Pull Request** detalhando suas alterações.
-
-## 📄 Licença
-
-Este projeto está licenciado sob a **MIT License**.  
-Consulte o arquivo [LICENSE](LICENSE) para mais informações.
-
-## 👤 Autor
-
-Desenvolvido por **Aldecir Fonseca**  
-GitHub: [@aldecirfonseca](https://github.com/aldecirfonseca)
+Seja você um profissional em busca do próximo passo na sua carreira ou uma empresa procurando o candidato ideal, nossa plataforma foi criada para tornar essa conexão mais simples, rápida e eficiente.
 
 ---
 
-**AtomPHP** — Simples. Direto. Funcional.
+## ✨ Para Candidatos: A Sua Carreira Começa Aqui
+
+Encontre a vaga perfeita sem sair de casa. No Conecta Muriaé, você pode:
+
+- **Criar seu Perfil Profissional:** Monte um currículo online completo e destaque suas habilidades e experiências.
+- **Buscar Vagas com Facilidade:** Use nossos filtros para encontrar oportunidades que combinam com você, seja presencial ou remoto, CLT ou PJ.
+- **Candidatar-se com Um Clique:** Viu uma vaga que gostou? Sua candidatura é enviada de forma instantânea.
+- **Acompanhar Suas Candidaturas:** Tenha um painel para gerenciar e ver o status de todas as suas aplicações.
+
+---
+
+## 🏢 Para Empresas: 
+
+Publique suas vagas e encontre os profissionais que sua empresa precisa para crescer.
+
+- **Publique e Gerencie Suas Vagas:** Crie anúncios de vagas detalhados em minutos e gerencie tudo em um painel de controle intuitivo.
+- **Alcance Talentos Locais:** Tenha acesso a um banco de currículos de profissionais qualificados de Muriaé e região.
+- **Ferramentas de Gestão:** Edite, arquive e gerencie o status de suas vagas publicadas com facilidade.
+- **Encontre o Cargo que Precisa:** Nosso sistema permite que você cadastre novos cargos dinamicamente, garantindo que sua vaga seja anunciada da forma correta.
+
+---
+
+## 🚀 Como Começar?
+
+1.  **Cadastre-se:** Clique em "Cadastrar" no site e escolha seu perfil: "Candidato" ou "Empresa".
+2.  **Complete seu Perfil:** Se for candidato, preencha seu currículo. Se for empresa, adicione as informações do seu negócio.
+3.  **Conecte-se:** Comece a buscar vagas ou a publicar suas oportunidades!
+
+---
+
+## 💬 Dúvidas ou Suporte?
+
+Nossa equipe está pronta para ajudar. Visite nossa seção de "Contato" no site para falar conosco.
+
+**Conecta Muriaé: Unindo talentos e empresas para o futuro da nossa cidade.**
