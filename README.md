@@ -1,4 +1,4 @@
-# Conecta Muriaé - Seu Portal de Oportunidades
+# Conecta Muriaé
 
 Bem-vindo ao Conecta Muriaé! Nossa missão é fortalecer a comunidade local, conectando os melhores talentos da nossa cidade com as empresas que fazem a diferença em Muriaé e região.
 
