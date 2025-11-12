@@ -6,7 +6,7 @@ Seja você um profissional em busca do próximo passo na sua carreira ou uma emp
 
 ---
 
-## ✨ Para Candidatos: A Sua Carreira Começa Aqui
+## ✨ Para Candidatos:
 
 Encontre a vaga perfeita sem sair de casa. No Conecta Muriaé, você pode:
 
