@@ -3,25 +3,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const formBusca = document.getElementById('form-busca');
     const listaVagas = document.getElementById('lista-vagas');
 
-    // Mapeamentos (para traduzir os IDs que vêm do banco)
     const modalidades = { '1': 'Presencial', '2': 'Remoto' };
     const vinculos = { '1': 'CLT', '2': 'Pessoa Jurídica (PJ)' };
 
     if (formBusca) {
-        // Listener para o SUBMIT do formulário
         formBusca.addEventListener('submit', function(e) {
-            e.preventDefault(); // Impede o envio tradicional
+            e.preventDefault(); 
             buscarVagas();
         });
 
-        // Opcional: buscar ao mudar qualquer filtro (exceto o de texto)
         formBusca.querySelectorAll('select').forEach(select => {
             select.addEventListener('change', buscarVagas);
         });
     }
 
     async function buscarVagas() {
-        // 1. Mostrar loading
         listaVagas.innerHTML = `
             <div class="text-center p-5">
                 <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
@@ -31,12 +27,10 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
 
-        // 2. Pegar dados do formulário e criar query string
         const formData = new FormData(formBusca);
         const params = new URLSearchParams(formData).toString();
 
         try {
-            // 3. Fazer a requisição AJAX para o controller
             const response = await fetch(`${appBaseUrl}vagas/buscar?${params}`);
             if (!response.ok) {
                 throw new Error('Erro na rede: ' + response.statusText);
@@ -44,7 +38,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const data = await response.json();
             
-            // 4. Renderizar os resultados
             renderVagas(data.vagas);
 
         } catch (error) {
@@ -58,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function renderVagas(vagas) {
-        // Limpa a lista
         listaVagas.innerHTML = '';
 
         if (!vagas || vagas.length === 0) {
@@ -71,13 +63,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // 5. Criar o HTML para cada vaga
         vagas.forEach(vaga => {
-            // Formata a data
             let dataFormatada = 'N/A';
             if (vaga.dtInicio) {
                 try {
-                    // Adiciona fuso horário para evitar problemas de "um dia antes"
                     const data = new Date(vaga.dtInicio + 'T03:00:00Z'); 
                     dataFormatada = data.toLocaleDateString('pt-BR');
                 } catch(e) {
@@ -85,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // Traduz os IDs
             const modalidadeNome = modalidades[vaga.modalidade] || 'N/A';
             const vinculoNome = vinculos[vaga.vinculo] || 'N/A';
             
@@ -114,7 +102,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Função auxiliar para evitar XSS
     function escapeHTML(str) {
         if (str === null || str === undefined) return '';
         return str.toString()
@@ -125,7 +112,4 @@ document.addEventListener('DOMContentLoaded', function() {
                  .replace(/'/g, '&#039;');
     }
     
-    // Opcional: Carregar as vagas uma vez ao carregar a página
-    // (Apenas se você não quiser o carregamento inicial via PHP)
-    // buscarVagas(); 
 });

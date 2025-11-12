@@ -15,7 +15,6 @@ class MensagemModel extends ModelMain
             return [];
         }
 
-        // Constrói a consulta para buscar as mensagens
         return $this->db->table($this->table)
             ->where('id_conversa', $id_conversa)
             ->orderBy('data_envio', 'ASC')

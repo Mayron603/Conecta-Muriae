@@ -72,15 +72,6 @@
                                             <tr><td colspan="5" class="text-center">Nenhuma vaga ativa encontrada.</td></tr>
                                         <?php else: ?>
                                             <?php foreach ($dados['vagas_ativas'] as $vaga): ?>
-
-                                                                                                <!-- +++ INÍCIO DEBUG VIEW +++ -->
-                                                <?php 
-                                                    echo '<pre style="background: #fff; color: #000; padding: 10px; border: 2px solid blue; font-family: monospace;">';
-                                                    echo '<strong>DEBUG: Vendo qual ID está sendo usado no loop da VIEW:</strong><br>';
-                                                    var_dump($vaga['vaga_id']);
-                                                    echo '</pre>';
-                                                ?>
-                                                <!-- +++ FIM DEBUG VIEW +++ -->
                                                 <tr>
                                                     <td>
                                                         <h6 class="mb-0"><?= htmlspecialchars($vaga['descricao']) ?></h6>

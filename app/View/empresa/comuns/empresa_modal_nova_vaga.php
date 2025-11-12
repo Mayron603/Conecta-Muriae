@@ -55,10 +55,14 @@
                                     <?php foreach ($cargos as $cargo): ?>
                                         <option value="<?= $cargo['cargo_id'] ?>"><?= htmlspecialchars($cargo['descricao']) ?></option>
                                     <?php endforeach; ?>
-                                <?php else: ?>
-                                     <option value="" disabled>Nenhum cargo encontrado. Verifique o cadastro.</option>
                                 <?php endif; ?>
+                                <option value="outro">Outro...</option>
                             </select>
+                        </div>
+
+                        <div class="col-md-12" id="outro-cargo-container" style="display: none;">
+                            <label for="outro_cargo_descricao" class="form-label">Nome do Novo Cargo*</label>
+                            <input type="text" class="form-control" id="outro_cargo_descricao" name="outro_cargo_descricao">
                         </div>
                         
                         <div class="col-12">
@@ -76,3 +80,24 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cargoSelect = document.getElementById('cargo_id');
+    const outroCargoContainer = document.getElementById('outro-cargo-container');
+    const outroCargoInput = document.getElementById('outro_cargo_descricao');
+
+    if (cargoSelect) {
+        cargoSelect.addEventListener('change', function () {
+            if (this.value === 'outro') {
+                outroCargoContainer.style.display = 'block';
+                outroCargoInput.setAttribute('required', 'required');
+            } else {
+                outroCargoContainer.style.display = 'none';
+                outroCargoInput.removeAttribute('required');
+                outroCargoInput.value = '';
+            }
+        });
+    }
+});
+</script>

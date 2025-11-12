@@ -107,7 +107,7 @@ class VagaModel extends ModelMain
 
     public function getById($id)
     {
-        return $this->db->where($this->primaryKey, $id)->first();
+        return $this->db->table($this->table)->where($this->primaryKey, $id)->first();
     }
 
     public function countAtivas()

@@ -1,6 +1,3 @@
-/**
- * Função para mostrar/esconder o campo "Outro Cargo"
- */
 function toggleOutroCargo(selectElement, targetId) {
     const targetDiv = document.getElementById(targetId);
     if (!targetDiv) return; // Se o elemento não existir, não faz nada
@@ -15,35 +12,27 @@ function toggleOutroCargo(selectElement, targetId) {
         }
     }
 }
-/**
- * Executa o código quando o DOM (página) estiver pronto
- */
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- LÓGICA DO CROPPER DE FOTO ---
 
-    // 1. Procura o input da foto na página
     const inputFoto = document.getElementById('inputFoto');
 
-    // 2. Se o input existir (estamos na página de currículo), executa o script
     if (inputFoto) {
 
-        // 3. Pega a URL de upload que o PHP colocou no HTML
         const uploadUrl = inputFoto.dataset.uploadUrl;
         
-        // Se não encontrar a URL, avisa no console e para
         if (!uploadUrl) {
             console.error('Erro: data-upload-url não foi definido no input #inputFoto');
             return;
         }
 
-        // 4. Pega os outros elementos do modal
         const modalCropFoto = new bootstrap.Modal(document.getElementById('modalCropFoto'));
         const imageToCrop = document.getElementById('imageToCrop');
         const cropAndUploadBtn = document.getElementById('cropAndUpload');
         let cropper;
 
-        // 5. Adiciona os "escutadores" de eventos
         inputFoto.addEventListener('change', function (e) {
             const files = e.target.files;
             if (files && files.length > 0) {
@@ -84,7 +73,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formData = new FormData();
                 formData.append('foto', blob, 'foto_perfil.jpg');
                 
-                // 6. USA A URL CORRETA (que lemos do atributo 'data-')
                 fetch(uploadUrl, {
                     method: 'POST',
                     body: formData,

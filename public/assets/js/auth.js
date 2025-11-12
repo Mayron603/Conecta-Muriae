@@ -1,10 +1,7 @@
-// Espera o DOM carregar para garantir que os elementos existam
 document.addEventListener('DOMContentLoaded', function() {
 
-    // --- Lógica do login.php (Alternar visibilidade da senha) ---
     const passwordToggles = document.querySelectorAll('.password-toggle');
     
-    // Verifica se existem elementos '.password-toggle' na página atual
     if (passwordToggles.length > 0) {
         passwordToggles.forEach(toggle => {
             toggle.addEventListener('click', () => {
@@ -20,10 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- Lógica do cadastro.php (Campos dinâmicos e máscara de CPF) ---
     const tipoSelect = document.getElementById('tipo');
 
-    // Só executa esta lógica se encontrar o 'tipoSelect' (ou seja, se estiver na pág de cadastro)
     if (tipoSelect) {
         const pfFields = document.getElementById('pessoaFisicaFields');
         const estFields = document.getElementById('estabelecimentoFields');
@@ -32,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const estNomeInput = document.getElementById('estabelecimento_nome');
         const estEmailInput = document.getElementById('estabelecimento_email');
 
-        // Função para alternar campos com base no tipo de conta
         function toggleFields() {
             const value = tipoSelect.value;
             pfFields.classList.add('d-none');
@@ -55,9 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         tipoSelect.addEventListener('change', toggleFields);
-        toggleFields(); // Executa ao carregar a página
+        toggleFields(); 
 
-        // Aplica a máscara de CPF
         if (cpfInput) {
             cpfInput.addEventListener('input', function (e) {
                 let value = e.target.value.replace(/\D/g, '');

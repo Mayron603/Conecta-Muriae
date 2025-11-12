@@ -180,10 +180,24 @@ class Empresa extends EmpresaBaseController
     public function salvar()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $vagaModel = $this->loadModel("Vaga");
+            $vagaModel = $this->loadModel('Vaga');
+            $cargoModel = $this->loadModel('Cargo');
+            $cargoId = $_POST['cargo_id'];
+
+            if ($cargoId === 'outro' && !empty($_POST['outro_cargo_descricao'])) {
+                $novoCargoDescricao = trim($_POST['outro_cargo_descricao']);
+                
+                $cargoId = $cargoModel->insert(['descricao' => $novoCargoDescricao]);
+                
+                if (!$cargoId) {
+                    Session::set('flash_msg', ['mensagem' => 'Erro ao criar o novo cargo.', 'tipo' => 'error']);
+                    Redirect::page('empresa/vagas');
+                    return;
+                }
+            }
 
             $dadosVaga = [
-                'cargo_id' => $_POST['cargo_id'],
+                'cargo_id' => $cargoId,
                 'descricao' => $_POST['descricao'],
                 'sobreaVaga' => $_POST['sobreaVaga'],
                 'modalidade' => $_POST['modalidade'],

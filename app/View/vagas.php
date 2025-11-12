@@ -2,7 +2,6 @@
 include_once __DIR__ . "/comuns/cabecalho.php"; 
 use Core\Library\Session;
 
-// Dicionários para tradução dos códigos
 $vagas = $dados['vagas'] ?? [];
 $vinculos = [
     1 => 'CLT',
@@ -16,7 +15,6 @@ $modalidades = [
 
 ?>
 
-<!-- Hero Section -->
 <section class="hero-section-vagas">
     <div class="container">
         <div class="row align-items-center">
@@ -32,20 +30,17 @@ $modalidades = [
     </div>
 </section>
 
-<!-- Barra de Busca -->
 <section class="search-section py-4 bg-light">
     <div class="container">
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 <form id="form-busca" class="row g-3">
-                    <!-- ... (código do formulário de busca mantido) ... -->
-                </form>
+                    </form>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Listagem de Vagas -->
 <section class="vagas-section py-5">
     <div class="container">
 
@@ -58,27 +53,13 @@ $modalidades = [
                  htmlspecialchars($flash_msg['mensagem']).
                  '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>'.
                  '</div>';
-            // CORREÇÃO DEFINITIVA: Sobrescrevendo a sessão com null para limpá-la
             Session::set('flash_msg', null);
         }
         ?>
 
         <div class="row">
-            <!-- Filtros -->
-            <aside class="col-lg-3 mb-4 mb-lg-0">
-                <div class="card">
-                    <div class="card-header bg-white border-bottom-0">
-                        <h5 class="mb-0">Filtrar Vagas</h5>
-                    </div>
-                    <div class="card-body">
-                        <!-- ... (código dos filtros mantido) ... -->
-                    </div>
-                </div>
-            </aside>
             
-            <!-- Lista de Vagas -->
-            <div class="col-lg-9">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="col-lg-12"> <div class="d-flex justify-content-between align-items-center mb-4">
                     <h2 class="h4 fw-bold mb-0">
                         <span id="vagas-count"><?= count($vagas) ?></span> Vagas Disponíveis
                     </h2>
@@ -91,7 +72,6 @@ $modalidades = [
                     </div>
                 </div>
                 
-                <!-- Container das vagas -->
                 <div class="vagas-container">
                     <?php if (empty($vagas)): ?>
                         <div class="card mb-3">
@@ -112,7 +92,7 @@ $modalidades = [
                                         </div>
                                         <div class="col-md-3 text-md-end">
                                              <a href="<?= baseUrl() ?>vagas/candidatar/<?= $vaga['vaga_id'] ?>" class="btn btn-primary btn-sm mt-2">Candidatar-se</a>
-                                            <a href="<?= baseUrl() ?>vagas/visualizar/<?= $vaga['vaga_id'] ?>" class="btn btn-secondary btn-sm mt-2">Ver detalhes</a>
+                                             <a href="<?= baseUrl() ?>vagas/visualizar/<?= $vaga['vaga_id'] ?>" class="btn btn-secondary btn-sm mt-2">Ver detalhes</a>
                                         </div>
                                     </div>
                                     <div class="d-flex mt-3 text-muted">
@@ -126,11 +106,9 @@ $modalidades = [
                     <?php endif; ?>
                 </div>
                 
-                <!-- Paginação -->
                 <nav aria-label="Page navigation" class="mt-4">
                     <ul class="pagination justify-content-center">
-                        <!-- ... (código da paginação mantido) ... -->
-                    </ul>
+                        </ul>
                 </nav>
             </div>
         </div>
